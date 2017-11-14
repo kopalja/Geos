@@ -1,9 +1,15 @@
-﻿Build started 14. 11. 2017 9:58:48.
-     1>Project "C:\Users\User\Documents\GitHub\Geos\Geos\Console\Console.vcxproj" on node 2 (Build target(s)).
+﻿Build started 14. 11. 2017 21:51:16.
+     1>Project "C:\Users\User\Documents\GitHub\Geos\Geos\Console\Console.vcxproj" on node 3 (Build target(s)).
      1>Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\User\Documents\GitHub\Geos\Geos\Release\Console.exe" /INCREMENTAL:NO /NOLOGO C:\Users\User\Documents\GitHub\Geos\Geos\Release\Geos.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\User\Documents\GitHub\Geos\Geos\Release\Console.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /FIXED:NO /NXCOMPAT /MACHINE:X86 /SAFESEH Release\app.res
+         Release\AssemblyInfo.obj
+         Release\Console.obj
+         Release\stdafx.obj
+         "Release\.NETFramework,Version=v4.5.AssemblyAttributes.obj"
+            Creating library C:\Users\User\Documents\GitHub\Geos\Geos\Release\Console.lib and object C:\Users\User\Documents\GitHub\Geos\Geos\Release\Console.exp
          Console.vcxproj -> C:\Users\User\Documents\GitHub\Geos\Geos\Release\Console.exe
      1>Done Building Project "C:\Users\User\Documents\GitHub\Geos\Geos\Console\Console.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:00.11
+Time Elapsed 00:00:00.92
