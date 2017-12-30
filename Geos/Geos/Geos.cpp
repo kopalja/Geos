@@ -23,10 +23,11 @@ Geos::~Geos()
 
 
 
-void Geos::Process( __in const char *inputPath, __in const char *outputPath )
+void Geos::Process( __in const char *inputOriginPath, __in const char *inputInteractivePath, __in const char *outputPath, int erosion, int diletation )
 {
+	cout << erosion << endl;
 	HRESULT hr;
-	ImageHandler imageHandler( inputPath, outputPath, &hr );
+	ImageHandler imageHandler( inputOriginPath, outputPath, &hr );
 
 	if ( SUCCEEDED( hr ) )
 	{
@@ -40,180 +41,249 @@ void Geos::Process( __in const char *inputPath, __in const char *outputPath )
 		hr = imageHandler.Create( pOrigin );
 		if ( SUCCEEDED( hr ) )
 		{
-			/* Aloc gray image */
-			Image *pGrayImage = new Image(
-				imageHandler.InputImageWidth(), 
-				imageHandler.InputImageHeight(), 
-				imageHandler.InputImageWidth() * imageHandler.InputImageHeight(),
-				new BYTE[imageHandler.InputImageWidth() * imageHandler.InputImageHeight()] 
-			);
-			GrayScale( pOrigin, pGrayImage );
+			ImageHandler imageHandler( inputInteractivePath, outputPath, &hr );
 
-			/* Aloc distance map */
-			double **ppGeodesicDistance = new double*[imageHandler.InputImageWidth()];
-			for (int i = 0; i < imageHandler.InputImageWidth(); i++)
-				ppGeodesicDistance[i] = new double[imageHandler.InputImageHeight()];
-
-			for (int y = 0; y < imageHandler.InputImageHeight(); y++)
-				for (int x = 0; x < imageHandler.InputImageWidth(); x++)
-					ppGeodesicDistance[x][y] = UINT_MAX / 8;
-
-			for (int y = 200; y < imageHandler.InputImageHeight(); y++)
+			if ( SUCCEEDED( hr ) )
 			{
-				for (int x = 150; x < 300; x++)
+				/* Aloc InteractiveImage image */
+				Image *pInteractiveImage = new Image(
+					imageHandler.InputImageWidth(), 
+					imageHandler.InputImageHeight(), 
+					imageHandler.InputImageWidth() * imageHandler.InputImageHeight() * imageHandler.InputImageByteDepth(),
+					new BYTE[imageHandler.InputImageWidth() * imageHandler.InputImageHeight() * imageHandler.InputImageByteDepth()] 
+				);
+				hr = imageHandler.Create( pInteractiveImage );
+				if ( SUCCEEDED( hr ) )
 				{
-					//ppGeodesicDistance[x][y] = 0;
+					ImageSegmentation( const_cast<Image&>( *pInteractiveImage ), erosion, diletation, *pOrigin );
+					imageHandler.Save( pOrigin );
 				}
+				delete pInteractiveImage;
 			}
-			ppGeodesicDistance[0][0] = 0;
-			double alfa = 0.0;
-
-			std::clock_t clock;
-			int start = std::clock();
-			int duration;
-
-			GeodesicDistance( alfa, pGrayImage, ppGeodesicDistance );
-			GeodesicDistance( alfa, pGrayImage, ppGeodesicDistance );
-			GeodesicDistance( alfa, pGrayImage, ppGeodesicDistance );
-			GeodesicDistance( alfa, pGrayImage, ppGeodesicDistance );
-
-			DistancesToImage( ppGeodesicDistance, pGrayImage );
-
-			cout <<  std::clock() - start << endl;
-
-
-
-
-			imageHandler.Save( pGrayImage );
-
-			delete pGrayImage;
 		}
 		delete pOrigin;
 	}
-
 }
 
 
-void Geos::GrayScale( __in const Image *pOrigin, __out Image *pGrayImage )
+void Geos::GrayScale( __in const Image & pOrigin, __out Image *pGrayImage )
 {
 	UINT byteDepth = 0;
-	if ( pOrigin->size == pOrigin->width * pOrigin->height * 3 )
+	if ( pOrigin.size == pOrigin.width * pOrigin.height * 3 )
 		byteDepth = 3;
-	else if ( pOrigin->size == pOrigin->width * pOrigin->height * 4 )
+	else if ( pOrigin.size == pOrigin.width * pOrigin.height * 4 )
 		byteDepth = 4;
 	_ASSERT( byteDepth == 3 || byteDepth == 4 );
 
 	UINT j = 0;
 	for (int i = 0; i < pGrayImage->size; i++)
 	{
-		UINT rgbSum = 2989 * pOrigin->buffer[j + 2] + 5870 * pOrigin->buffer[j + 1] + 1140 * pOrigin->buffer[j];
+		UINT rgbSum = 2989 * pOrigin.buffer[j + 2] + 5870 * pOrigin.buffer[j + 1] + 1140 * pOrigin.buffer[j];
 		pGrayImage->buffer[i] = rgbSum / 10000;
 		j += byteDepth;
 	}
 }
 
 
-void Geos::GeodesicDistance( __in double alfa, __in const Image *pGrayImage, __inout double **ppGeodesicDistance )
-{
-	int dxa = - pGrayImage->width - 1;
-	int dxb = - pGrayImage->width; 
-	int dxc = - pGrayImage->width + 1;
-	int dxd = - 1; 
-	int index = pGrayImage->width;
-	double da, db, dc, dd;
-
-
-	for (int y = 1; y < pGrayImage->height - 1; y++)
-	{
-		index++;
-		for (int x = 1; x < pGrayImage->width - 1; x++)
-		{
-			GrayBaseNeighborDistances( pGrayImage->buffer, index, dxa, dxb, dxc, dxd, &da, &db, &dc, &dd );
-
-			double d1 = sqrt2 + alfa * da + ppGeodesicDistance[x - 1][y - 1];
-			double d2 = 1.0 + alfa * db + ppGeodesicDistance[x - 0][y - 1];
-			double d3 = sqrt2 + alfa * dc + ppGeodesicDistance[x + 1][y - 1];
-			double d4 = 1.0 + alfa * dd + ppGeodesicDistance[x - 1][y - 0];
-
-			if ( ppGeodesicDistance[x][y] > d1 )
-				ppGeodesicDistance[x][y] = d1;
-			if ( ppGeodesicDistance[x][y] > d2 )
-				ppGeodesicDistance[x][y] = d2;
-			if ( ppGeodesicDistance[x][y] > d3 )
-				ppGeodesicDistance[x][y] = d3;
-			if ( ppGeodesicDistance[x][y] > d4 )
-				ppGeodesicDistance[x][y] = d4;
-			index++;
-		}
-		index++;
-	}
-
-	dxa = 1;
-	dxb = pGrayImage->width - 1; 
-	dxc = pGrayImage->width;
-	dxd = pGrayImage->width + 1; 
-
-	for (int y = pGrayImage->height - 2; y >= 1; y--)
-	{
-		index--;
-		for (int x = pGrayImage->width - 2; x >= 1; x--)
-		{
-			index--;
-			GrayBaseNeighborDistances( pGrayImage->buffer, index, dxa, dxb, dxc, dxd, &da, &db, &dc, &dd );
-			double d1 = 1.0 + alfa * da + ppGeodesicDistance[x + 1][y - 0];
-			double d2 = sqrt2 + alfa * db + ppGeodesicDistance[x - 1][y + 1];
-			double d3 = 1.0 + alfa * dc + ppGeodesicDistance[x + 0][y + 1];
-			double d4 = sqrt2 + alfa * dd + ppGeodesicDistance[x + 1][y + 1];
-
-			if ( ppGeodesicDistance[x][y] > d1 )
-				ppGeodesicDistance[x][y] = d1;
-			if ( ppGeodesicDistance[x][y] > d2 )
-				ppGeodesicDistance[x][y] = d2;
-			if ( ppGeodesicDistance[x][y] > d3 )
-				ppGeodesicDistance[x][y] = d3;
-			if ( ppGeodesicDistance[x][y] > d4 )
-				ppGeodesicDistance[x][y] = d4;
-		}
-		index--;
-	}
-}
-
-
-inline void Geos::GrayBaseNeighborDistances( __in const BYTE *pBuffer, __in UINT index, __in int dxa, __in int dxb, __in int dxc, __in int dxd, __out double *da, __out double *db, __out double *dc, __out double *dd )
-{
-	int shift = sizeof(int) * CHAR_BIT - 1;
-	int i, mask;
-	i = pBuffer[index] - pBuffer[index + dxa];
-	mask = i >> shift;
-	*da = (i + mask) ^ mask;
-
-	i = pBuffer[index] - pBuffer[index + dxb];
-	mask = i >> shift;
-	*db = (i + mask) ^ mask;
-
-	i = pBuffer[index] - pBuffer[index + dxc];
-	mask = i >> shift;
-	*dc = (i + mask) ^ mask;
-
-	i = pBuffer[index] - pBuffer[index + dxd];
-	mask = i >> shift;
-	*dd = (i + mask) ^ mask;
-}
-
 
 
 void Geos::DistancesToImage( __in double **ppGeodesicDistance, __out Image *pGrayImage )
 {
 	double maxD = 0;
+	double minD = 0;
 	for (int y = 1; y < pGrayImage->height - 1; y++)
 		for (int x = 1; x < pGrayImage->width - 1; x++)
-			maxD = max( maxD, ppGeodesicDistance[x][y] );
+		{
+			maxD = max( maxD,abs( ppGeodesicDistance[x][y] ) );
+		}
 
+
+	minD = abs(minD);
+	maxD += abs(minD);
 	UINT i = 0;
 	for (int y = 0; y < pGrayImage->height; y++)
 		for (int x = 0; x < pGrayImage->width; x++)
 		{
-			pGrayImage->buffer[i] = 255.0 * ( ppGeodesicDistance[x][y] / maxD );
+			pGrayImage->buffer[i] = 255.0 * ( abs(ppGeodesicDistance[x][y]) / maxD );
 			i++;
 		}
 }
+
+
+void Geos::ImageSegmentation( __in const Image & pInteractiveImage,  __in int erosion, __in int diletation, __inout Image & pOrigin )
+{
+	double ** ppProbability = new double*[pInteractiveImage.width];
+	bool ** result = new bool*[pInteractiveImage.width];
+	for (int i = 0; i < pInteractiveImage.width; i++)
+	{
+		ppProbability[i] = new double[pInteractiveImage.height];
+		result[i] = new bool[pInteractiveImage.height];
+	}
+
+
+	Image *pGrayImage = new Image(pOrigin.width, pOrigin.height, pOrigin.width * pOrigin.height, new BYTE[pOrigin.width * pOrigin.height] );
+	GrayScale(pOrigin, pGrayImage );
+
+	SetPixelProbability( pInteractiveImage, pGrayImage, const_cast<Image&>( pOrigin ), ppProbability );
+
+
+	SymmetricalFilter s(1.4, pGrayImage, ppProbability );
+	s.GetSymmetricalMask( erosion, diletation, result );
+
+
+	int min = INT32_MAX, max = INT32_MIN;
+
+	for (int y = 0; y < pInteractiveImage.height; y++)
+	{
+		for (int x = 0; x < pInteractiveImage.width; x++)
+		{
+			if (s.m_ppSignedDistance[x][y] < min )
+				min = s.m_ppSignedDistance[x][y];
+
+			if (s.m_ppSignedDistance[x][y] > max )
+				max = s.m_ppSignedDistance[x][y];
+		}
+	}
+
+	double scale = max - min;
+
+	UINT i = 0, j = 0;
+	for (int y = 0; y < pInteractiveImage.height; y++)
+	{
+		for (int x = 0; x < pInteractiveImage.width; x++)
+		{
+			if (result[x][y] == false )
+			{
+				pOrigin.buffer[i] = 0;
+				pOrigin.buffer[i + 1] = 0;
+				pOrigin.buffer[i + 2] = 0;
+			}
+			else
+			{
+				//pOrigin.buffer[i] = 255;
+				//pOrigin.buffer[i + 1] = 255;
+				//pOrigin.buffer[i + 2] = 255;
+			}
+
+			//pOrigin.buffer[i] = ( s.m_ppSignedDistance[x][y] - min ) / scale * 255.0;
+			//pOrigin.buffer[i + 1] = ( s.m_ppSignedDistance[x][y] - min ) / scale * 255.0;
+			//pOrigin.buffer[i + 2] = ( s.m_ppSignedDistance[x][y] - min ) / scale * 255.0;
+
+
+
+			//pOrigin.buffer[i] = ppProbability[x][y] * 255.0;
+			//pOrigin.buffer[i + 1] = ppProbability[x][y] * 255.0;
+			//pOrigin.buffer[i + 2] = ppProbability[x][y] * 255.0;
+			i += 3;
+			j ++;
+		}
+	}
+}
+
+
+void  Geos::SetPixelProbability( __in const Image & pInteractiveImage, __in const Image * pGrayImage, __in const Image & pOrigin, __out double ** ppProbability )
+{
+	bool ** ppLocations = new bool*[pInteractiveImage.width];
+	double ** ppBgProbability = new double*[pInteractiveImage.width];
+	for (int i = 0; i < pInteractiveImage.width; i++)
+	{
+		ppLocations[i] = new bool[pInteractiveImage.height];
+		ppBgProbability[i] = new double[pInteractiveImage.height];
+	}
+
+	/* Foregraung Pixels */
+	SetLocations( pInteractiveImage, []( BYTE b, BYTE g, BYTE r ){ return ( b < 30 && g > 230 && r < 30 ); }, ppLocations );
+	SetAreaProbability( pGrayImage, pOrigin, ppLocations, ppProbability );
+	/* Background Pixels */
+	SetLocations( pInteractiveImage, []( BYTE b, BYTE g, BYTE r ){ return ( b < 30 && g < 30 && r > 230 ); }, ppLocations );
+	SetAreaProbability( pGrayImage, pOrigin, ppLocations, ppBgProbability );
+
+
+
+
+	for (int y = 0; y < pInteractiveImage.height; y++)
+	{
+		for (int x = 0; x < pInteractiveImage.width; x++)
+		{
+			ppProbability[x][y] = ( ppProbability[x][y] - ppBgProbability[x][y] ) + 0.5;
+
+			//ppProbability[x][y] = ppBgProbability[x][y];
+
+			if (ppProbability[x][y] < 0 ) ppProbability[x][y] = 0;
+			if (ppProbability[x][y] > 1 ) ppProbability[x][y] = 1;
+
+		}
+	}
+
+	for (int i = 0; i < pInteractiveImage.width; i++)
+	{
+		delete ppLocations[i];
+		delete ppBgProbability[i];
+	}
+	delete ppLocations;
+	delete ppBgProbability;
+}
+
+void Geos::SetLocations( __in const Image & pInteractiveImage, __in std::function<bool ( BYTE, BYTE, BYTE )> condition, __out bool ** ppLocations )
+{
+	UINT i = 0;
+	for (int y = 0; y < pInteractiveImage.height; y++)
+	{
+		for (int x = 0; x < pInteractiveImage.width; x++)
+		{
+			ppLocations[x][y] = condition( pInteractiveImage.buffer[i], pInteractiveImage.buffer[i + 1], pInteractiveImage.buffer[i + 2] );
+			i += 3;
+		}
+	}
+}
+
+
+void Geos::SetAreaProbability( __in const Image * pGrayImage, __in const Image & pOrigin, __in bool ** ppLocations, __out double ** ppProbability )
+{
+	double ** ppDistance = new double*[pGrayImage->width];
+	for (int i = 0; i < pGrayImage->width; i++)
+		ppDistance[i] = new double[pGrayImage->height];
+
+	for (int y = 0; y < pGrayImage->height; y++)
+	{
+		for (int x = 0; x < pGrayImage->width; x++)
+		{
+			if (ppLocations[x][y])
+				ppDistance[x][y] = 0;
+			else
+				ppDistance[x][y] = MAXINT32;
+		}
+	}
+
+
+	GMM gmm;
+	/* Color base probability */
+	gmm.Train( pOrigin, ppLocations, ppProbability );
+
+	SymmetricalFilter s(1.8, pGrayImage, ppDistance);
+	s.CountUnSignedDistance( pGrayImage, ppDistance );
+	s.CountUnSignedDistance( pGrayImage, ppDistance );
+	
+	double max = 0;
+	for (int y = 1; y < pGrayImage->height - 1; y++)
+	{
+		for (int x = 1; x < pGrayImage->width - 1; x++)
+		{
+			if (ppDistance[x][y] > max)
+				max = ppDistance[x][y];
+		}
+	}
+
+	for (int y = 0; y < pGrayImage->height; y++)
+	{
+		for (int x = 0; x < pGrayImage->width; x++)
+		{
+			double distanceBaseProbability = 1.0 - ( ppDistance[x][y] / ( max / 2 ) );
+			if (distanceBaseProbability  < 0 ) distanceBaseProbability = 0;
+			ppProbability[x][y] =  sqrt( ppProbability[x][y] * distanceBaseProbability );
+			//ppProbability[x][y] = distanceBaseProbability;
+		}
+	}
+}
+
+

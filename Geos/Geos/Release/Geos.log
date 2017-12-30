@@ -1,21 +1,19 @@
-﻿Build started 14. 11. 2017 21:51:16.
+﻿Build started 30. 12. 2017 0:11:38.
      1>Project "C:\Users\User\Documents\GitHub\Geos\Geos\Geos\Geos.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /AI"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\\" /AI"C:\Program Files (x86)\Windows Kits\8.0\References\CommonConfiguration\Neutral" /AI"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\Facades\\" /Zi /clr /nologo /W3 /WX- /O2 /Oy- /D WIN32 /D NDEBUG /D _WINDLL /D _UNICODE /D UNICODE /EHa /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Release\Geos.pch" /Fo"Release\\" /Fd"Release\vc110.pdb" /TP /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\mscorlib.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.Data.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.Xml.dll" /analyze- /errorReport:prompt /clr:nostdlib Geos.cpp
          Geos.cpp
-     1>Geos.cpp(54): warning C4018: '<' : signed/unsigned mismatch
-     1>Geos.cpp(57): warning C4018: '<' : signed/unsigned mismatch
-     1>Geos.cpp(58): warning C4018: '<' : signed/unsigned mismatch
-     1>Geos.cpp(61): warning C4018: '<' : signed/unsigned mismatch
-     1>Geos.cpp(71): warning C4101: 'clock' : unreferenced local variable
-     1>Geos.cpp(73): warning C4101: 'duration' : unreferenced local variable
-     1>Geos.cpp(216): warning C4244: '=' : conversion from 'double' to 'BYTE', possible loss of data
+     1>Geos.cpp(107): warning C4244: '=' : conversion from 'double' to 'BYTE', possible loss of data
+     1>Geos.cpp(141): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+     1>Geos.cpp(144): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\User\Documents\GitHub\Geos\Geos\Release\Geos.dll" /INCREMENTAL:NO /NOLOGO ole32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\User\Documents\GitHub\Geos\Geos\Release\Geos.pdb" /TLBID:1 /DYNAMICBASE /FIXED:NO /NXCOMPAT /MACHINE:X86 /SAFESEH /DLL Release\app.res
          Release\AssemblyInfo.obj
          Release\Geos.obj
+         Release\GMM.obj
          Release\ImageHandler.obj
          Release\Stdafx.obj
+         Release\SymmetricalFilter.obj
          "Release\.NETFramework,Version=v4.5.AssemblyAttributes.obj"
             Creating library C:\Users\User\Documents\GitHub\Geos\Geos\Release\Geos.lib and object C:\Users\User\Documents\GitHub\Geos\Geos\Release\Geos.exp
          Geos.vcxproj -> C:\Users\User\Documents\GitHub\Geos\Geos\Release\Geos.dll
@@ -23,4 +21,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:02.60
+Time Elapsed 00:00:02.76

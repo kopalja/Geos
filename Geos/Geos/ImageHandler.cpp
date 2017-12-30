@@ -39,7 +39,8 @@ HRESULT ImageHandler::DefineFormat( const char *inputPath )
 		i++;
 	}
 	if ( ( inputPath[i + 1] == 'j' && inputPath[i + 2] == 'p' && inputPath[i + 3] == 'g' ) || 
-		( inputPath[i + 1] == 'J' && inputPath[i + 2] == 'P' && inputPath[i + 3] == 'G' ) ) 
+		( inputPath[i + 1] == 'J' && inputPath[i + 2] == 'P' && inputPath[i + 3] == 'G' ) ||  
+		( inputPath[i + 1] == 'J' && inputPath[i + 2] == 'P' && inputPath[i + 3] == 'E' && inputPath[i + 4] == 'G' ) ) 
 	{
 		format = Format::Jpeg;
 		byteDepth = 3;
@@ -195,7 +196,7 @@ HRESULT ImageHandler::SetFrames()
 									if (SUCCEEDED(hr))
 									{
 										WICPixelFormatGUID p = GUID_WICPixelFormat8bppGray;
-										hr = piFrameEncode->SetPixelFormat(&p);
+										hr = piFrameEncode->SetPixelFormat(&k);
 									}
 								}
 							}
@@ -217,7 +218,7 @@ HRESULT ImageHandler::Create( __out Image* image )
 
 HRESULT ImageHandler::Save( __in Image *image ) 
 {
-	HRESULT hr = piFrameEncode->WritePixels( image->height, image->width, image->height * image->width, image->buffer );
+	HRESULT hr = piFrameEncode->WritePixels( image->height, image->width * 3, 3 * image->height * image->width, image->buffer );
 
 	// Check that the destination format and source formats are the same.
 	bool formatsEqual = FALSE;
