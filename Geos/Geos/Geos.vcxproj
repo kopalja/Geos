@@ -43,16 +43,20 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>C:\Users\User\Documents\GitHub\Geos\Geos\Geos\source;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <IncludePath>$(SolutionDir)\Geos\SourceGeos;$(SolutionDir)\Geos\SourceSharpness;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Geos\SourceGeos;$(SolutionDir)\Geos\SourceSharpness;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -63,7 +67,8 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Geos\SourceGeos;$(SolutionDir)\Geos\SourceSharpness</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -76,24 +81,43 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Geos.h" />
-    <ClInclude Include="GMM.h" />
-    <ClInclude Include="Image.h" />
-    <ClInclude Include="ImageHandler.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="SourceGeos\GaussianBlur.h" />
+    <ClInclude Include="SourceGeos\Geos.h" />
+    <ClInclude Include="SourceGeos\GMM.h" />
+    <ClInclude Include="SourceGeos\Image.h" />
+    <ClInclude Include="SourceGeos\ImageHandler.h" />
+    <ClInclude Include="SourceGeos\Probability.h" />
+    <ClInclude Include="SourceGeos\SymmetricalFilter.h" />
+    <ClInclude Include="SourceSharpness\Block.h" />
+    <ClInclude Include="SourceSharpness\FFT2D.h" />
+    <ClInclude Include="SourceSharpness\LargeBlock.h" />
+    <ClInclude Include="SourceSharpness\LinearRegression.h" />
+    <ClInclude Include="SourceSharpness\MagnitudeSpectrum.h" />
+    <ClInclude Include="SourceSharpness\RadialFrequency.h" />
+    <ClInclude Include="SourceSharpness\S1.h" />
+    <ClInclude Include="SourceSharpness\S2.h" />
+    <ClInclude Include="SourceSharpness\S3.h" />
     <ClInclude Include="Stdafx.h" />
-    <ClInclude Include="SymmetricalFilter.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
-    <ClCompile Include="Geos.cpp" />
-    <ClCompile Include="GMM.cpp" />
-    <ClCompile Include="ImageHandler.cpp" />
-    <ClCompile Include="Stdafx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="SymmetricalFilter.cpp" />
+    <ClCompile Include="SourceGeos\GaussianBlur.cpp" />
+    <ClCompile Include="SourceGeos\Geos.cpp" />
+    <ClCompile Include="SourceGeos\GMM.cpp" />
+    <ClCompile Include="SourceGeos\ImageHandler.cpp" />
+    <ClCompile Include="SourceGeos\Probability.cpp" />
+    <ClCompile Include="SourceGeos\SymmetricalFilter.cpp" />
+    <ClCompile Include="SourceSharpness\Block.cpp" />
+    <ClCompile Include="SourceSharpness\FFT2D.cpp" />
+    <ClCompile Include="SourceSharpness\LargeBlock.cpp" />
+    <ClCompile Include="SourceSharpness\LinearRegression.cpp" />
+    <ClCompile Include="SourceSharpness\MagnitudeSpectrum.cpp" />
+    <ClCompile Include="SourceSharpness\RadialFrequency.cpp" />
+    <ClCompile Include="SourceSharpness\S1.cpp" />
+    <ClCompile Include="SourceSharpness\S2.cpp" />
+    <ClCompile Include="SourceSharpness\S3.cpp" />
+    <ClCompile Include="Stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />

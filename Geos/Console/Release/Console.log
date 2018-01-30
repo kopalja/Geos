@@ -1,4 +1,4 @@
-﻿Build started 30. 12. 2017 0:11:38.
+﻿Build started 30. 1. 2018 0:15:38.
      1>Project "C:\Users\User\Documents\GitHub\Geos\Geos\Console\Console.vcxproj" on node 3 (Build target(s)).
      1>Link:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\User\Documents\GitHub\Geos\Geos\Release\Console.exe" /INCREMENTAL:NO /NOLOGO C:\Users\User\Documents\GitHub\Geos\Geos\Release\Geos.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\User\Documents\GitHub\Geos\Geos\Release\Console.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /FIXED:NO /NXCOMPAT /MACHINE:X86 /SAFESEH Release\app.res
@@ -12,4 +12,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.81
+Time Elapsed 00:00:00.85

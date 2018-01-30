@@ -13,48 +13,126 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Geos">
+      <UniqueIdentifier>{ef145716-bfa4-4432-a99e-7f01b4c4bd48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Sharpness">
+      <UniqueIdentifier>{8c74df1c-e14b-4e44-8491-82cf9050fa59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Geos">
+      <UniqueIdentifier>{146d7072-7fa9-48bf-9ca5-f9b491073657}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Sharpness">
+      <UniqueIdentifier>{e8a5c457-ee7e-4f8c-9dfb-c26773ab9af7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Geos.h">
+    <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceGeos\SymmetricalFilter.h">
+      <Filter>Header Files\Geos</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceGeos\ImageHandler.h">
+      <Filter>Header Files\Geos</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceGeos\Image.h">
+      <Filter>Header Files\Geos</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceGeos\Geos.h">
+      <Filter>Header Files\Geos</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceGeos\GMM.h">
+      <Filter>Header Files\Geos</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceSharpness\Block.h">
+      <Filter>Header Files\Sharpness</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceSharpness\FFT2D.h">
+      <Filter>Header Files\Sharpness</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceSharpness\LargeBlock.h">
+      <Filter>Header Files\Sharpness</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceSharpness\LinearRegression.h">
+      <Filter>Header Files\Sharpness</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceSharpness\MagnitudeSpectrum.h">
+      <Filter>Header Files\Sharpness</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceSharpness\RadialFrequency.h">
+      <Filter>Header Files\Sharpness</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceSharpness\S1.h">
+      <Filter>Header Files\Sharpness</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceSharpness\S2.h">
+      <Filter>Header Files\Sharpness</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceSharpness\S3.h">
+      <Filter>Header Files\Sharpness</Filter>
     </ClInclude>
     <ClInclude Include="Stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="SourceGeos\Probability.h">
+      <Filter>Header Files\Geos</Filter>
     </ClInclude>
-    <ClInclude Include="ImageHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Image.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SymmetricalFilter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GMM.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="SourceGeos\GaussianBlur.h">
+      <Filter>Header Files\Geos</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Geos.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="AssemblyInfo.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceGeos\Geos.cpp">
+      <Filter>Source Files\Geos</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceGeos\GMM.cpp">
+      <Filter>Source Files\Geos</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceGeos\ImageHandler.cpp">
+      <Filter>Source Files\Geos</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceSharpness\Block.cpp">
+      <Filter>Source Files\Sharpness</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceSharpness\FFT2D.cpp">
+      <Filter>Source Files\Sharpness</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceSharpness\LargeBlock.cpp">
+      <Filter>Source Files\Sharpness</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceSharpness\LinearRegression.cpp">
+      <Filter>Source Files\Sharpness</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceSharpness\MagnitudeSpectrum.cpp">
+      <Filter>Source Files\Sharpness</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceSharpness\RadialFrequency.cpp">
+      <Filter>Source Files\Sharpness</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceSharpness\S1.cpp">
+      <Filter>Source Files\Sharpness</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceSharpness\S2.cpp">
+      <Filter>Source Files\Sharpness</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceSharpness\S3.cpp">
+      <Filter>Source Files\Sharpness</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceGeos\SymmetricalFilter.cpp">
+      <Filter>Source Files\Geos</Filter>
     </ClCompile>
     <ClCompile Include="Stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ImageHandler.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="SourceGeos\Probability.cpp">
+      <Filter>Source Files\Geos</Filter>
     </ClCompile>
-    <ClCompile Include="SymmetricalFilter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GMM.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="SourceGeos\GaussianBlur.cpp">
+      <Filter>Source Files\Geos</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

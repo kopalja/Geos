@@ -2,7 +2,7 @@
 
 #include "stdafx.h"
 
-#include "Geos.h"
+#include "SourceGeos\Geos.h"
 
 #include <iostream>
 using namespace std;

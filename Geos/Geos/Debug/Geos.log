@@ -1,19 +1,26 @@
-﻿Build started 29. 12. 2017 21:00:46.
+﻿Build started 28. 1. 2018 16:50:03.
      1>Project "C:\Users\User\Documents\GitHub\Geos\Geos\Geos\Geos.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /AI"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\\" /AI"C:\Program Files (x86)\Windows Kits\8.0\References\CommonConfiguration\Neutral" /AI"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\Facades\\" /Zi /clr /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDLL /D _UNICODE /D UNICODE /EHa /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\Geos.pch" /Fo"Debug\\" /Fd"Debug\vc110.pdb" /TP /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\mscorlib.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.Data.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.Xml.dll" /analyze- /errorReport:prompt /clr:nostdlib Geos.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /IC:\Users\User\Documents\GitHub\Geos\Geos\\Geos\SourceGeos /IC:\Users\User\Documents\GitHub\Geos\Geos\\Geos\SourceSharpness /AI"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\\" /AI"C:\Program Files (x86)\Windows Kits\8.0\References\CommonConfiguration\Neutral" /AI"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\Facades\\" /Zi /clr /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDLL /D _UNICODE /D UNICODE /EHa /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /TP /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\mscorlib.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.Data.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.Xml.dll" /analyze- /errorReport:prompt /clr:nostdlib SourceGeos\Geos.cpp
          Geos.cpp
-     1>Geos.cpp(107): warning C4244: '=' : conversion from 'double' to 'BYTE', possible loss of data
-     1>Geos.cpp(141): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
-     1>Geos.cpp(144): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\User\Documents\GitHub\Geos\Geos\Debug\Geos.dll" /INCREMENTAL /NOLOGO ole32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\User\Documents\GitHub\Geos\Geos\Debug\Geos.pdb" /ASSEMBLYDEBUG /TLBID:1 /DYNAMICBASE /FIXED:NO /NXCOMPAT /MACHINE:X86 /DLL Debug\app.res
          Debug\AssemblyInfo.obj
          Debug\Geos.obj
          Debug\GMM.obj
          Debug\ImageHandler.obj
-         Debug\Stdafx.obj
+         Debug\Probability.obj
          Debug\SymmetricalFilter.obj
+         Debug\Block.obj
+         Debug\FFT2D.obj
+         Debug\LargeBlock.obj
+         Debug\LinearRegression.obj
+         Debug\MagnitudeSpectrum.obj
+         Debug\RadialFrequency.obj
+         Debug\S1.obj
+         Debug\S2.obj
+         Debug\S3.obj
+         Debug\Stdafx.obj
          "Debug\.NETFramework,Version=v4.5.AssemblyAttributes.obj"
             Creating library C:\Users\User\Documents\GitHub\Geos\Geos\Debug\Geos.lib and object C:\Users\User\Documents\GitHub\Geos\Geos\Debug\Geos.exp
          Geos.vcxproj -> C:\Users\User\Documents\GitHub\Geos\Geos\Debug\Geos.dll
@@ -21,4 +28,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:16.17
+Time Elapsed 00:00:31.67
