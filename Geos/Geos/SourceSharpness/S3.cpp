@@ -134,14 +134,14 @@ void S3::GrayScale( __in const Image & pOrigin, __out Image *pGrayImage )
 		}
 		for (int x = 0; x < pGrayImage->width - pOrigin.width; x++)
 		{
-			pGrayImage->buffer[j++] = 127;
+			pGrayImage->buffer[j++] = 0;
 		}
 	}
 	for (int y = 0; y < pGrayImage->height - pOrigin.height; y++)
 	{
 		for (int x = 0; x < pGrayImage->width; x++)
 		{
-			pGrayImage->buffer[j++] = 127;
+			pGrayImage->buffer[j++] = 0;
 		}
 	}
 }

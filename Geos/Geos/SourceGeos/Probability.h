@@ -62,6 +62,12 @@ private:
 		__out double ** ppDistance
 		);
 
+	void SegmentInteractive(
+		__in const Image & rOrigin,
+		__in const Location * pSelectedPixel,
+		__out double ** ppProbability
+		);
+
 
 
 

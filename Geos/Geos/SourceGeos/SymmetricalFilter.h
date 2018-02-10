@@ -110,15 +110,15 @@ private:
 		__out double *dd
 		)
 	{
-		*da = max( 0, pBuffer[index + dxa] - pBuffer[index] );
-		*db = max( 0, pBuffer[index + dxb] - pBuffer[index] );
-		*dc = max( 0, pBuffer[index + dxc] - pBuffer[index] );
-		*dd = max( 0, pBuffer[index + dxd] - pBuffer[index] );
+		*da = max( 0, ( pBuffer[index + dxa] - pBuffer[index] ) * pBuffer[index + dxa] );
+		*db = max( 0, ( pBuffer[index + dxb] - pBuffer[index] ) * pBuffer[index + dxb] );
+		*dc = max( 0, ( pBuffer[index + dxc] - pBuffer[index] ) * pBuffer[index + dxc] );
+		*dd = max( 0, ( pBuffer[index + dxd] - pBuffer[index] ) * pBuffer[index + dxd] );
 
-		*da *= *da * *da;
-		*db *= *db * *db;
-		*dc *= *dc * *dc;
-		*dd *= *dd * *dd;
+		*da *= *da;
+		*db *= *db;
+		*dc *= *dc;
+		*dd *= *dd;
 	}
 
 

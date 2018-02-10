@@ -17,16 +17,27 @@ Geos::Geos()
 
 Geos::~Geos()
 {
-
+	for (int i = 0; i < m_width; i++)
+	{
+	 	delete m_ppResult[i];
+	}
+	delete m_ppResult;
 }
 
 
 
-void Geos::Process( __in const char *inputOriginPath, __in const char *inputInteractivePath, __in const char *outputPath, int erosion, int diletation )
+void Geos::Process( 
+		__in const char *inputImagePath,
+		__in Location * pForeground,
+		__in Location * pBackground,
+		__in int sharpType,
+		__in int timeOptimalization,
+		__in int smoothness,
+		__in int colorRepresentation
+		)
 {
-	cout << erosion << endl;
 	HRESULT hr;
-	ImageHandler imageHandler( inputOriginPath, outputPath, &hr );
+	ImageHandler imageHandler( inputImagePath, "root.jpg", &hr );
 
 	if ( SUCCEEDED( hr ) )
 	{
@@ -40,25 +51,9 @@ void Geos::Process( __in const char *inputOriginPath, __in const char *inputInte
 		hr = imageHandler.Create( pOrigin );
 		if ( SUCCEEDED( hr ) )
 		{
-			ImageHandler imageHandler( inputInteractivePath, outputPath, &hr );
-
-			if ( SUCCEEDED( hr ) )
-			{
-				/* Aloc InteractiveImage image */
-				Image *pInteractiveImage = new Image(
-					imageHandler.InputImageWidth(), 
-					imageHandler.InputImageHeight(), 
-					imageHandler.InputImageWidth() * imageHandler.InputImageHeight() * imageHandler.InputImageByteDepth(),
-					new BYTE[imageHandler.InputImageWidth() * imageHandler.InputImageHeight() * imageHandler.InputImageByteDepth()] 
-				);
-				hr = imageHandler.Create( pInteractiveImage );
-				if ( SUCCEEDED( hr ) )
-				{
-					ImageSegmentation( const_cast<Image&>( *pInteractiveImage ), erosion, diletation, *pOrigin );
-					imageHandler.Save( pOrigin );
-				}
-				delete pInteractiveImage;
-			}
+			SetSegmentationParameters( sharpType, timeOptimalization, smoothness, colorRepresentation );
+			ImageSegmentation( const_cast<Image&>( *pOrigin ) );
+			//imageHandler.Save( pOrigin );
 		}
 		delete pOrigin;
 	}
@@ -102,112 +97,163 @@ void Geos::GrayScale( __in const Image & rOrigin, __out Image * pGrayImage )
 
 
 
-void Geos::ImageSegmentation( __in const Image & pInteractiveImage,  __in int erosion, __in int diletation, __inout Image & pOrigin )
+void Geos::ImageSegmentation( __in const Image & rOrigin )
 {
-	double ** ppProbability = new double*[pInteractiveImage.width];
-	bool ** result = new bool*[pInteractiveImage.width];
-	for (int i = 0; i < pInteractiveImage.width; i++)
+	double ** ppProbability = new double*[rOrigin.width];
+	bool ** result = new bool*[rOrigin.width];
+	for (int i = 0; i < rOrigin.width; i++)
 	{
-		ppProbability[i] = new double[pInteractiveImage.height];
-		result[i] = new bool[pInteractiveImage.height];
+		ppProbability[i] = new double[rOrigin.height];
+		result[i] = new bool[rOrigin.height];
 	}
-
-
-	Image *pGrayImage = new Image( pOrigin.width, pOrigin.height, pOrigin.width * pOrigin.height, new BYTE[pOrigin.width * pOrigin.height] );
-	GrayScale( pOrigin, pGrayImage );
-
-
 
 	//SetPixelProbability( pInteractiveImage, pGrayImage, const_cast<Image&>( pOrigin ), ppProbability );
 	//GMM g;
 	//g.AutomaticProbability( pOrigin, ppProbability );
 
 	Probability p;
-	p.GetProbabitily( SegmentationType::Sharpness, pOrigin, ppProbability );
+	p.GetProbabitily( m_SegmentationType, rOrigin, ppProbability );
 
+	MinimizeEnegry( rOrigin, ppProbability, result );
 
+	m_width = rOrigin.width;
+	m_height = rOrigin.height;
+	m_ppResult = new bool*[m_width];
+	for (int i = 0; i < m_width; i++)
+		m_ppResult[i] = new bool[m_height];
 
-	SymmetricalFilter s( 0.5, pGrayImage, const_cast< const double **>( ppProbability ) );
-	s.GetSymmetricalMask( erosion, diletation, result );
+	for (int y = 0; y < m_height; y++)
+	{
+		for (int x = 0; x < m_width; x++)
+		{
+			m_ppResult[x][y] = result[x][y];
+		}
+	}
 
 
 
 	UINT i = 0, j = 0;
-	for (int y = 0; y < pInteractiveImage.height; y++)
+	for (int y = 0; y < rOrigin.height; y++)
 	{
-		for (int x = 0; x < pInteractiveImage.width; x++)
+		for (int x = 0; x < rOrigin.width; x++)
 		{
-			if (result[x][y] == false )
-			{
-				pOrigin.buffer[i] = 0;
-				pOrigin.buffer[i + 1] = 0;
-				pOrigin.buffer[i + 2] = 0;
-			}
-			else
-			{
-				//pOrigin.buffer[i] = 255;
-				//pOrigin.buffer[i + 1] = 255;
-				//pOrigin.buffer[i + 2] = 255;
-			}
-
-			if (s.m_ppSignedDistance[x][y] < 0)
-			{
-				//pOrigin.buffer[i] =  0;
-				//pOrigin.buffer[i + 1] =  0;
-				//pOrigin.buffer[i + 2] =  0;
-			}
-			else 
-			{
-				//pOrigin.buffer[i] =  0;
-				//pOrigin.buffer[i + 1] =  0;
-				//pOrigin.buffer[i + 2] =  0;
-			}
-			//cout << s.m_ppSignedDistance[x][y] << endl;
-				
-
-			//pOrigin.buffer[i] = ppProbability[x][y] * 255.0;
-			//pOrigin.buffer[i + 1] = ppProbability[x][y] * 255.0;
-			//pOrigin.buffer[i + 2] = ppProbability[x][y] * 255.0;
+			rOrigin.buffer[i] = ppProbability[x][y] * 255.0;
+			rOrigin.buffer[i + 1] = ppProbability[x][y] * 255.0;
+			rOrigin.buffer[i + 2] = ppProbability[x][y] * 255.0;
 			i += 3;
 			j ++;
 		}
 	}
 }
 
-
-void SetProbability( __in SegmentationType segmentationType, __in const Image & rOrigin, __out double ** ppProbability )
+void Geos::MinimizeEnegry( __in const Image & rOrigin, __in double ** ppProbability, __out bool ** ppLabeling )
 {
-	switch (segmentationType)
+	Image *pGrayImage = new Image( rOrigin.width, rOrigin.height, rOrigin.width * rOrigin.height, new BYTE[rOrigin.width * rOrigin.height] );
+	GrayScale( rOrigin, pGrayImage );
+	SymmetricalFilter s( 0.2, pGrayImage, const_cast<const double **>( ppProbability ) );
+
+	int energy = MAXINT32;
+	int segmentationIndex;
+	int numberOfEnergies = ( 3 - m_TimeOptimalization ) * 2; // 2, 4, 6
+	int smoothness = ( m_Smoothness + 1 ) * 20; // 20, 40, 60
+
+	int tetaDiameter = sqrt( rOrigin.width * rOrigin.height ) / 100 * ( m_Smoothness + 1 );
+
+	for (int i = 1; i <= numberOfEnergies; i++)
 	{
-	case Interactive:
+		int ans = tetaDiameter + tetaDiameter / i;
+		if ( i % 2 == 1 )
+			ans = tetaDiameter - tetaDiameter / i;
+
+
+		s.GetSymmetricalMask( ans, ans + 16, ppLabeling );
+		int newEnergy = CountEnegry( const_cast<Image &>( *pGrayImage ), ppProbability, ppLabeling );
+		cout << "energi " << newEnergy << endl;
+		if ( newEnergy < energy )
 		{
-		break;
-		}
-	case Sharpness:
-		{
-		break;
-		}
-	case Color:
-		{
-			/* Use k means with GMM, modeling all pixels */
-			GMM g;
-			g.AutomaticProbability( rOrigin, ppProbability );
-			break;
-		}
-	case Salience:
-		{
-		break;
+			energy = newEnergy; 
+			segmentationIndex = i;
 		}
 	}
+
+	int ans = tetaDiameter + tetaDiameter / segmentationIndex;
+	if ( segmentationIndex % 2 == 1 )
+		ans = tetaDiameter - tetaDiameter / segmentationIndex;
+	s.GetSymmetricalMask( ans, ans + 16, ppLabeling );
+	cout << "teta " << segmentationIndex << endl;
 }
+
+double Geos::CountEnegry( __in const Image & rGrayImage, __in double ** ppProbability, __in bool ** ppLabeling )
+{
+	double energyU = 0.0;
+	double energyV = 0.0;
+	double teta = 1.0;
+	double n = 200.0;
+
+	// Energy of U(z, a)
+	for (int y = 0; y < rGrayImage.height; y++)
+	{
+		for (int x = 0; x < rGrayImage.width; x++)
+		{
+			if ( ppLabeling[x][y] == true )
+				energyU += ppProbability[x][y];
+			else 
+				energyU += 1.0 - ppProbability[x][y]; 
+		}
+	}
+	energyU *= -1.0;
+
+	// Enegry of V(z, a)
+	for (int y = 0; y < rGrayImage.height - 1; y++)
+	{
+		for (int x = 1; x < rGrayImage.width - 1; x++)
+		{
+			if ( ppLabeling[x][y] != ppLabeling[x + 1][y] )
+				energyV += exp( -1.0 * abs( rGrayImage.buffer[ y * rGrayImage.width + x] - rGrayImage.buffer[ y * rGrayImage.width + x + 1] ) / n );
+			if ( ppLabeling[x][y] != ppLabeling[x - 1][y + 1] )
+				energyV += exp( -1.0 * abs( rGrayImage.buffer[ y * rGrayImage.width + x] - rGrayImage.buffer[ (y + 1) * rGrayImage.width + x - 1] ) / n ); 
+			if ( ppLabeling[x][y] != ppLabeling[x + 0][y + 1] )
+				energyV += exp( -1.0 * abs( rGrayImage.buffer[ y * rGrayImage.width + x] - rGrayImage.buffer[ (y + 1) * rGrayImage.width + x + 0] ) / n ); 
+			if ( ppLabeling[x][y] != ppLabeling[x + 1][y + 1] )
+				energyV += exp( -1.0 * abs( rGrayImage.buffer[ y * rGrayImage.width + x] - rGrayImage.buffer[ (y + 1) * rGrayImage.width + x + 1] ) / n ); 
+		}
+	}
+	energyV *= -1;
+
+	return energyU + teta * energyV;
+}
+
+
+
+void Geos::SetSegmentationParameters( __in int sharpType, __in int timeOptimalization, __in int smoothness, __in int colorRepresentation )
+{
+	_ASSERT( sharpType == 0 || sharpType == 1 );
+	_ASSERT( timeOptimalization == 0 || timeOptimalization == 1 || timeOptimalization == 2 );
+	_ASSERT( smoothness == 0 || smoothness == 1 || smoothness == 2 );
+	_ASSERT( colorRepresentation == 0 || colorRepresentation == 1 );
+
+
+	if ( sharpType == 0 )
+		m_SegmentationType = SegmentationType::Sharpness;
+	else
+		m_SegmentationType = SegmentationType::Color;
+
+	m_TimeOptimalization = timeOptimalization;
+	m_Smoothness = smoothness;
+
+	if ( colorRepresentation == 0 )
+		m_RgbType = true;
+	else
+		m_RgbType = false;
+}
+
+
+
+
+//----------------------------------------------------------------
 
 void Geos::SetPixelProbability( __in const Image & pInteractiveImage, __in const Image * pGrayImage, __in const Image & pOrigin, __out double ** ppProbability )
 {
-
-
-
-
-
 	bool ** ppLocations = new bool*[pInteractiveImage.width];
 	double ** ppBgProbability = new double*[pInteractiveImage.width];
 	for (int i = 0; i < pInteractiveImage.width; i++)
@@ -292,7 +338,7 @@ void Geos::SetAreaProbability( __in const Image * pGrayImage, __in const Image &
 	
 	double max = 0;
 	for (int y = 1; y < pGrayImage->height - 1; y++)
-	{
+	{ 
 		for (int x = 1; x < pGrayImage->width - 1; x++)
 		{
 			if (ppDistance[x][y] > max)

@@ -8,7 +8,7 @@ using namespace std;
 const double sqrt2 = 1.41421356237;
 
 /* v from paper eq. 9 */
-const double v = 800.0;
+const double v = 200.0;
 
 SymmetricalFilter::SymmetricalFilter( __in double alfa, __in const Image *pGrayImage, __in const double **ppInputProbability )
 {
@@ -89,7 +89,7 @@ void SymmetricalFilter::GetSymmetricalMask( __in int erosion, __in int dilation,
 
 void SymmetricalFilter::CountSignedDistance( __in const Image *pGrayImage, __in const double **ppInputProbability )
 {
-	m_Alfa += 3.0;
+	m_Alfa += 9.0;
 	/* Aloc distance to complement */
 	double **ppDistanceToObject = new double*[m_Width];
 	double **ppDistanceToComplement = new double*[m_Width];
@@ -100,16 +100,16 @@ void SymmetricalFilter::CountSignedDistance( __in const Image *pGrayImage, __in 
 	}
 
 	InitDistance( false, ppInputProbability, ppDistanceToObject );
-	CountUnSignedDistance( pGrayImage, ppDistanceToObject );
-	CountUnSignedDistance( pGrayImage, ppDistanceToObject );
-	CountUnSignedDistance( pGrayImage, ppDistanceToObject );
-	CountUnSignedDistance( pGrayImage, ppDistanceToObject );
+	//CountUnSignedDistance( pGrayImage, ppDistanceToObject );
+	//CountUnSignedDistance( pGrayImage, ppDistanceToObject );
+	//CountUnSignedDistance( pGrayImage, ppDistanceToObject );
+	//CountUnSignedDistance( pGrayImage, ppDistanceToObject );
 
 	InitDistance( true, ppInputProbability, ppDistanceToComplement );
-	CountUnSignedDistance( pGrayImage, ppDistanceToComplement );
-	CountUnSignedDistance( pGrayImage, ppDistanceToComplement );
-	CountUnSignedDistance( pGrayImage, ppDistanceToComplement );
-	CountUnSignedDistance( pGrayImage, ppDistanceToComplement );
+	//CountUnSignedDistance( pGrayImage, ppDistanceToComplement );
+	//CountUnSignedDistance( pGrayImage, ppDistanceToComplement );
+	//CountUnSignedDistance( pGrayImage, ppDistanceToComplement );
+	//CountUnSignedDistance( pGrayImage, ppDistanceToComplement );
 
 	/* Count signed distance */
 	for (int y = 0; y < m_Height; y++)
@@ -124,7 +124,7 @@ void SymmetricalFilter::CountSignedDistance( __in const Image *pGrayImage, __in 
 		delete[] ppDistanceToComplement[i];
 	}
 	delete[] ppDistanceToComplement;
-	m_Alfa -= 3.0;
+	m_Alfa -= 9.0;
 }
 
 

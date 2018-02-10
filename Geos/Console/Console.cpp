@@ -12,7 +12,37 @@ int main( int argc, char* argv[] )
 {
 	Geos g;
 
-	g.Process( argv[1], argv[2], argv[3], atoi( argv[4] ), atoi( argv[5] ) );
+	//g.Process( "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\football.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\football.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\out1.jpg", 0, 0 );
+
+	//g.Process( "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\koza.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\koza.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\out2.jpg", 0, 0 );
+
+	//g.Process( "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\e4k.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\e4k.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\out3.jpg", 0, 0 );
+
+	//g.Process( "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\bird2.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\bird2.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\out4.jpg", 0, 0 );
+
+	//g.Process( "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\plane.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\plane.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\out5.jpg", 0, 0 );
+
+	//g.Process( "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\monkey2.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\monkey2.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\out6.jpg", 0, 0 );
+
+	//g.Process( "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\face.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\face.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\results\\out7.jpg", 0, 0 );
+
+	//g.Process( "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\motor.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\motor.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\results\\out8.jpg", 0, 0 );
+
+	//g.Process( "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\jezko.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\jezko.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\results\\out9.jpg", 0, 0 );
+
+	//g.Process( "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\girl.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\girl.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\results\\out10.jpg", 0, 0 );
+
+	//g.Process( "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\birds.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\birds.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\results\\out11.jpg", 0, 0 );
+
+	//g.Process( "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\vrtak.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\vrtak.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\results\\out12.jpg", 0, 0 );
+
+	//g.Process( "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\flower.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\flower.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\results\\out13.jpg", 0, 0 );
+
+	//g.Process( "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\bird3.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\bird3.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\results\\out14.jpg", 0, 0 );
+
+	//g.Process( "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\flower2.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\flower2.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\results\\out16.jpg", 0, 0 );
+
+
 
 	cout << "end4" << endl;
 

@@ -32,64 +32,99 @@ void Probability::GetProbabitily( __in SegmentationType segmentationType, __in c
 
 void Probability::InteractiveProbability( __in const Image & rOrigin, __in const Location * pForeground, __in const Location * pBackground, __out double ** ppProbability )
 {
+	SegmentInteractive( rOrigin, pForeground, ppProbability );
 
+	double ** ppBackgroundProbability = new double*[rOrigin.width];
+	for (int i = 0; i < rOrigin.width; i++)
+		ppBackgroundProbability[i] = new double[rOrigin.height];
+
+	SegmentInteractive( rOrigin, pForeground, ppBackgroundProbability );
+
+	for (int y = 0; y < rOrigin.height; y++)
+	{
+		for (int x = 0; x < rOrigin.width; x++)
+		{
+			ppProbability[x][y] = log( ppProbability[x][y] ) - log( ppBackgroundProbability[x][y] );
+			ppProbability[x][y] = 1.0 / ( 1.0 + exp( - ppProbability[x][y] / 10.0 ) );
+		}
+	}
+
+	for (int i = 0; i < rOrigin.width; i++)
+		delete ppBackgroundProbability[i];
+	delete ppBackgroundProbability;
 }
 
 
 void Probability::SharpnessProbability( __in const Image & rOrigin, __out double ** ppProbability )
 {
+	int xDivisible = rOrigin.width, yDivisible = rOrigin.height;
+
+	if (rOrigin.width % 8 != 0)
+		xDivisible = rOrigin.width + ( 8 - ( rOrigin.width % 8 ) );
+	if (rOrigin.height % 8 != 0)
+		yDivisible = rOrigin.height + ( 8 - ( rOrigin.height % 8 ) );
+
+
+
+	
+
 	S3 s3;
-	Image *pGrayImage = new Image( rOrigin.width, rOrigin.height, rOrigin.width * rOrigin.height, new BYTE[rOrigin.width * rOrigin.height] );
-	Image *pResultImage = new Image( rOrigin.width / 4, rOrigin.height / 4, rOrigin.size / 16, new BYTE[rOrigin.size / 16] );
+	Image *pGrayImage = new Image( xDivisible, yDivisible, xDivisible * yDivisible , new BYTE[xDivisible * yDivisible] );
+	Image *pResultImage = new Image( xDivisible / 4, yDivisible / 4, ( xDivisible * yDivisible ) / 16, new BYTE[( xDivisible * yDivisible ) / 16] );
 	s3.GrayScale( rOrigin, pGrayImage );
 	s3.GrayToResult( ResultType::S3Image, 2, false, const_cast<Image &>( *pGrayImage ), pResultImage );
 
-	for (int y = 0; y < pGrayImage->height; y++)
+	for (int i = 1; i < pResultImage->height; i++)
 	{
-		for (int x = 0; x < pGrayImage->width; x++)
+		pResultImage->buffer[( i * pResultImage->width ) - 1] = 0;
+		pResultImage->buffer[( i * pResultImage->width ) - 2] = 0;
+	}
+
+	for (int y = 0; y < rOrigin.height; y++)
+	{
+		for (int x = 0; x < rOrigin.width; x++)
 		{
-			ppProbability[x][y] = (double)pResultImage->buffer[ ( y >> 2 ) * ( pGrayImage->width / 4 ) + ( x >> 2 ) ] / 255.0;
-			pGrayImage->buffer[ y * pGrayImage->width + x ] = pResultImage->buffer[ ( y >> 2 ) * ( pGrayImage->width / 4 ) + ( x >> 2 ) ];
+			ppProbability[x][y] = (double)pResultImage->buffer[ ( y >> 2 ) * pResultImage->width + ( x >> 2 ) ] / 255.0;
 		}
 	}
 
-	double ** ppDistance = new double*[pGrayImage->width];
-	for (int i = 0; i < pGrayImage->width; i++)
+	/* Fill probability inside sharp area */
+	double ** ppDistance = new double*[pResultImage->width];
+	for (int i = 0; i < pResultImage->width; i++)
 	{
-		ppDistance[i] = new double[pGrayImage->height];
+		ppDistance[i] = new double[pResultImage->height];
 	}
 	
 	SymmetricalFilter symmetricalFilter( 1.0 );
+	InitDistance( pResultImage->width, pResultImage->height, ppDistance );
 
-	clock_t begin = clock();
+	symmetricalFilter.CountUnSignedDistance( pResultImage, ppDistance, false );
+	symmetricalFilter.CountUnSignedDistance( pResultImage, ppDistance, false );
+	symmetricalFilter.CountUnSignedDistance( pResultImage, ppDistance, false );
+	symmetricalFilter.CountUnSignedDistance( pResultImage, ppDistance, false );
+	symmetricalFilter.CountUnSignedDistance( pResultImage, ppDistance, false );
+	symmetricalFilter.CountUnSignedDistance( pResultImage, ppDistance, false );
 
-	InitDistance( pGrayImage->width, pGrayImage->height, ppDistance );
-	symmetricalFilter.CountUnSignedDistance( pGrayImage, ppDistance, false );
-
-	clock_t end = clock();
-	double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-	cout << "time : " << elapsed_secs <<  endl;
-
-	for (int y = 0; y < pGrayImage->height; y++)
+	for (int y = 0; y < rOrigin.height; y++)
 	{
-		for (int x = 0; x < pGrayImage->width; x++)
+		for (int x = 0; x < rOrigin.width; x++)
 		{
-			//cout << ppDistance[565][308] << endl;
-			//if ( ppDistance[x][y] > 2500 )
-				//ppProbability[x][y] = 1;
+			if ( ppDistance[x >> 2][y >> 2] > 80000 )
+			{
+				ppProbability[x][y] = max( ppProbability[x][y], ( ppDistance[x >> 2][y >> 2] - 80000.0 ) / 150000.0 ); 
+				if ( ppProbability[x][y] > 1.0 )
+					ppProbability[x][y] = 1.0;
+			}
 		}
 	}
 
-	for (int i = 0; i < pGrayImage->width; i++)
+	for (int i = 0; i < pResultImage->width; i++)
 	{
 		delete ppDistance[i];
 	}
 	delete ppDistance;
 	delete pGrayImage;
 	delete pResultImage;
-
-	
-
 }
 
 void Probability::SalienceProbability( __in const Image & rOrigin, __out double ** ppProbability )
@@ -157,4 +192,10 @@ void Probability::InitDistance( __in int width, __in int height, __out double **
 		ppDistance[width - 1][y] = 0;
 		ppDistance[width - 2][y] = 0;
 	}
+}
+
+
+void Probability::SegmentInteractive( __in const Image & rOrigin, __in const Location * pSelectedPixel, __out double ** ppProbability )
+{
+
 }

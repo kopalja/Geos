@@ -1,0 +1,11 @@
+C:\Users\User\Documents\GitHub\Geos\Geos\SegmentationForm\bin\Release\SegmentationForm.exe.config
+C:\Users\User\Documents\GitHub\Geos\Geos\SegmentationForm\bin\Release\SegmentationForm.exe
+C:\Users\User\Documents\GitHub\Geos\Geos\SegmentationForm\bin\Release\SegmentationForm.pdb
+C:\Users\User\Documents\GitHub\Geos\Geos\SegmentationForm\obj\Release\SegmentationForm.csprojResolveAssemblyReference.cache
+C:\Users\User\Documents\GitHub\Geos\Geos\SegmentationForm\obj\Release\SegmentationForm.Properties.Resources.resources
+C:\Users\User\Documents\GitHub\Geos\Geos\SegmentationForm\obj\Release\SegmentationForm.csproj.GenerateResource.Cache
+C:\Users\User\Documents\GitHub\Geos\Geos\SegmentationForm\obj\Release\SegmentationForm.exe
+C:\Users\User\Documents\GitHub\Geos\Geos\SegmentationForm\obj\Release\SegmentationForm.pdb
+C:\Users\User\Documents\GitHub\Geos\Geos\SegmentationForm\obj\Release\SegmentationForm.HelloForm.resources
+C:\Users\User\Documents\GitHub\Geos\Geos\SegmentationForm\obj\Release\SegmentationForm.SegmentationForm.resources
+C:\Users\User\Documents\GitHub\Geos\Geos\SegmentationForm\obj\Release\SegmentationForm.EditForm.resources

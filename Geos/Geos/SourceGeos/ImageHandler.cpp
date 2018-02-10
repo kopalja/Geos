@@ -76,7 +76,7 @@ HRESULT ImageHandler::SetCoders( __in LPCWSTR inputPath, __in LPCWSTR outputPath
 {
 	HRESULT hr = S_OK;
 	// Initialize COM.
-	hr = CoInitializeEx(NULL, COINITBASE_MULTITHREADED);
+	hr = CoInitializeEx( NULL, COINIT_MULTITHREADED );
 	IWICImagingFactory *piFactory = NULL;
 	piDecoder = NULL;
 
