@@ -9,11 +9,10 @@ const double M_PI = 3.14159265358979323846264338327950288;
 
 GMM::GMM(void)
 {
-	m_nMaxLoop = 20;
+	m_nMaxLoop = 10;
 
 	m_pNumClass = 0;
 	m_pProbClass = 0;
-
 	m_ppSumFeatClass = 0;
 	m_ppSumVarClass = 0;
 	m_ppMeanFeatClass = 0;
@@ -40,7 +39,6 @@ GMM::~GMM(void)
 
 void GMM::AutomaticProbability( __in const Image & rImage, __out double ** ppProbability )
 {
-
 	double * pLab = new double[3];
 	INPUTDATA_MULTI_GAUSS * ppData = new INPUTDATA_MULTI_GAUSS[rImage.width * rImage.height];
 	UINT i = 0;
@@ -62,8 +60,9 @@ void GMM::AutomaticProbability( __in const Image & rImage, __out double ** ppPro
 			i++;
 		}
 	}
-	init( 2, rImage.width * rImage.height, 3, ppData );
-	train();
+	init( 2, 3 );
+	train( ppData, rImage.width * rImage.height);
+
 
 	i = 0;
 	for (int y = 0; y < rImage.height; y++)
@@ -113,74 +112,98 @@ void GMM::AutomaticProbability( __in const Image & rImage, __out double ** ppPro
 	cout << m_pNumClass[1] << endl;
 }
 
-void GMM::InteractiveProbability( const Image & rImage, bool ** ppLocation, double ** ppProbability )
+
+
+void GMM::InteractiveProbability( 		
+		__in const Image & rImage,
+		__in bool ** ppForeGround,
+		__in int numberOfForegroundSamples,
+		__in bool ** ppBackGround,
+		__in int numberOfBackGroundSamples,
+		__out double ** ppProbability 
+		)
 {
-	UINT numberOfRecords = 0;
+	double ** tempProbability = new double*[rImage.width];
+	for (int i = 0; i < rImage.width; i++)
+	{
+		tempProbability[i] = new double[rImage.height];
+	}
+
+	/* number of gaussians, size of feature */
+	init( 2, 3 );
+
+	CreateModel( rImage, 2, ppForeGround, numberOfForegroundSamples, ppProbability );
+	CreateModel( rImage, 2, ppBackGround, numberOfBackGroundSamples, tempProbability );
+
 	for (int y = 0; y < rImage.height; y++)
 	{
 		for (int x = 0; x < rImage.width; x++)
 		{
-			ppProbability[x][y] = 1;
-			if (ppLocation[x][y]) 
-				numberOfRecords++;
+			ppProbability[x][y] = log( ppProbability[x][y] ) - log( tempProbability[x][y] );
+			ppProbability[x][y] = 1.0 / ( 1.0 + exp( - ppProbability[x][y] / 10.0 ) );
 		}
 	}
-	INPUTDATA_MULTI_GAUSS * ppData = new INPUTDATA_MULTI_GAUSS[numberOfRecords];
+	for (int i = 0; i < rImage.width; i++)
+	{
+		delete tempProbability[i];
+	}
+	delete tempProbability;
+}
+
+
+void GMM::CreateModel( __in const Image & rImage, __in int numberOfGaussian, __in bool ** ppTrainData, __in int numberOfSamples, __out double ** ppProbabilityInModel )
+{
+	double * pLab = new double[3];
+	INPUTDATA_MULTI_GAUSS * ppData = new INPUTDATA_MULTI_GAUSS[numberOfSamples];
 	UINT i = 0;
 	for (int y = 0; y < rImage.height; y++)
 	{
 		for (int x = 0; x < rImage.width; x++)
 		{
-			if (ppLocation[x][y]) 
+			if ( ppTrainData[x][y] )
 			{
-				UINT base = ( y * rImage.width + x ) * 3;
-				ppData[i].B = rImage.buffer[base];
-				ppData[i].A = rImage.buffer[base + 1];
-				ppData[i].L = rImage.buffer[base + 2];
+				int index = ( y * rImage.width + x ) * 3;
+
+				ppData[i].L = rImage.buffer[index + 2];
+				ppData[i].A = rImage.buffer[index + 1];
+				ppData[i].B = rImage.buffer[index + 0];
 				ppData[i].nClass = -1;
 				i++;
 			}
 		}
 	}
-
-	init( 2, numberOfRecords, 3, ppData );
-	train();
-
-	i = 0;
+	train( ppData, numberOfSamples);
+	double *pProbability = new double[m_nSizeK];
 	for (int y = 0; y < rImage.height; y++)
 	{
 		for (int x = 0; x < rImage.width; x++)
 		{
-			int base =  ( y * rImage.width + x ) * 3;
-			double *pProbability = new double[m_nSizeK];
-			double dProbSum = 0;
-			for(int b=0; b<m_nSizeK; b++) 
+			int index = ( y * rImage.width + x ) * 3; 
+			for( int b = 0; b < m_nSizeK; b++ ) 
 			{
 				pProbability[b] = 1;
-				double dGauss = 1;
-			
-				for(int c=0; c<m_nSizeFeature; c++) 
-				{
-					dGauss = getgauss(m_ppMeanFeatClass[b][c] / 255.0, m_ppVarFeatClass[b][c] / 255.0, rImage.buffer[base + c] / 255.0 );
-					pProbability[b] *= dGauss;
-				}
-				dProbSum += pProbability[b];
+				pProbability[b] *= getgaussFast( m_ppMeanFeatClass[b][0], getGaussVar[b][0], m_ppVarFeatClass[b][0], rImage.buffer[index + 2] );
+				pProbability[b] *= getgaussFast( m_ppMeanFeatClass[b][1], getGaussVar[b][1], m_ppVarFeatClass[b][1], rImage.buffer[index + 1] );
+				pProbability[b] *= getgaussFast( m_ppMeanFeatClass[b][2], getGaussVar[b][0], m_ppVarFeatClass[b][2], rImage.buffer[index + 0] );
 			}
-			ppProbability[x][y] = dProbSum;
-			i += 3;
+			
+			ppProbabilityInModel[x][y] = 0;
+			for (int i = 0; i < numberOfGaussian; i++)
+			{
+				ppProbabilityInModel[x][y] += pProbability[i] * m_pProbClass[i];
+			}
 		}
-
 	}
+	delete ppData;
 }
 
 
-
-void GMM::init(int nSizeK, int nSizeRecord, int nSizeFeature, INPUTDATA_MULTI_GAUSS * ppDataList)
+void GMM::init(int nSizeK, int nSizeFeature)
 {
 	m_nSizeK = nSizeK;
-	m_nSizeRecord = nSizeRecord;
+	//m_nSizeRecord = nSizeRecord;
 	m_nSizeFeature = nSizeFeature;
-	m_ppDataList = ppDataList;
+	//m_ppDataList = ppDataList;
 
 	m_pNumClass = new int[m_nSizeK];
 	m_pProbClass = new double[m_nSizeK];
@@ -205,35 +228,53 @@ void GMM::init(int nSizeK, int nSizeRecord, int nSizeFeature, INPUTDATA_MULTI_GA
 	}
 }
 
-void GMM::train()
+void GMM::train( __in INPUTDATA_MULTI_GAUSS * ppData, __in int dataSize )
 {
+	m_nSizeRecord = dataSize;
+	m_ppDataList = ppData;
+
 	i_step();
 	for(int z=0; z<m_nMaxLoop; z++) 
 	{
 		m_step();
 		if(!m_bIsChangeClass)
 		{
-			cout << "aaaaaa" << endl;
 			break;
 		}
 		e_step();
+	}
+
+	/* gaussian variance */
+	for (int i = 0; i < m_nSizeK; i++)
+	{
+		for (int j = 0; j < m_nSizeFeature; j++)
+		{
+			getGaussVar[i][j] = ( 1.0 / sqrt( 2.0 * M_PI * m_ppVarFeatClass[i][j] ) );
+		}
 	}
 }
 
 // initalize centroid
 void GMM::i_step()
 {
-	for(int a=0; a< m_nSizeRecord / 2; a++) 
+	int temp = m_nSizeRecord / m_nSizeK;
+	for(int i=0; i< m_nSizeRecord; i++) 
 	{
+		//m_ppDataList[i].nClass = i % m_nSizeK;
 		// assign initial cluster(random)
-		m_ppDataList[a].nClass = 0;
+		//if ( i / temp == m_nSizeK )
+		//	m_ppDataList[i].nClass = m_nSizeK - 1;
+		//else
+		//	m_ppDataList[i].nClass = i / temp;
 	}
-	for(int a=m_nSizeRecord / 2; a< m_nSizeRecord; a++) 
+	for (int i = 0; i < m_nSizeRecord / 2; i++)
 	{
-		// assign initial cluster(random)
-		m_ppDataList[a].nClass = 1;
+		m_ppDataList[i].nClass = 0;
 	}
-
+	for (int i = m_nSizeRecord / 2; i < m_nSizeRecord; i++)
+	{
+		m_ppDataList[i].nClass = 1;
+	}
 	e_step();
 }
 
@@ -255,8 +296,6 @@ void GMM::e_step()
 	for(int a=0; a<m_nSizeRecord; a++) 
 	{
 		m_pNumClass[m_ppDataList[a].nClass]++;
-
-
 		m_ppSumFeatClass[m_ppDataList[a].nClass][0] += m_ppDataList[a].L; 
 		m_ppSumFeatClass[m_ppDataList[a].nClass][1] += m_ppDataList[a].A;
 		m_ppSumFeatClass[m_ppDataList[a].nClass][2] += m_ppDataList[a].B;
@@ -347,11 +386,15 @@ inline double GMM::getgauss(double dMean, double dVar, double dValue)
 	dGauss =   (1.0 / sqrt(2.0 * dPi * var)) * (exp(-0.5 * dif * dif / var));
 	//dGauss = (1.0 / sqrt(2.0 * dPi * dVar)) * (exp((-1.0 * (dValue - dMean) * (dValue - dMean)) / (2.0 * dVar)));
 
-
-
 	if (_isnan(dGauss)) return 0;
 
 	return dGauss;
+}
+
+inline double GMM::getgaussFast(double dMean, double dVar, double var, double dValue)
+{
+	double dif = dValue - dMean;
+	return  dVar * (exp(-0.5 * dif * dif / var));
 }
 
 

@@ -11,23 +11,25 @@ public:
 
 	SymmetricalFilter(
 		__in double alfa,
-		__in const Image *pGrayImage, 
+		__in const Image & pGrayImage, 
 		__in const double **ppInputProbability
 		);
 
-	SymmetricalFilter( double alfa ){ m_Alfa = alfa; m_NeedToDealoc = false; }
+	SymmetricalFilter(
+		__in double alfa,
+		__in const Image & pGrayImage
+		);
 
 	~SymmetricalFilter(
 		);
 
 	void GetSymmetricalMask(
-		__in int erosion, 
-		__in int dilation, 
+		__in double erosion, 
+		__in double dilation, 
 		__out bool **ppSymmetricalMask 
 		);
 
 	void CountUnSignedDistance(
-		__in const Image *pGrayImage, 
 		__inout double **ppDistance,
 		__in bool normalDistance = true
 		);
@@ -38,11 +40,10 @@ private:
 	double m_Alfa;
 	bool m_NeedToDealoc;
 	UINT m_Width, m_Height;
-	const Image *m_pGrayImage;
+	const Image & m_rGrayImage;
 
 
 	void CountSignedDistance(
-		__in const Image *pGrayImage, 
 		__in const double **ppInputProbability
 		);
 
@@ -54,12 +55,12 @@ private:
 		);
 
 	void CountErosion(
-		__in int erosion,
+		__in double erosion,
 		__out double **ppErosionDistance
 		);
 
 	void CountDilation(
-		__in int dilation,
+		__in double dilation,
 		__out double **ppDilationDistance
 		);
 

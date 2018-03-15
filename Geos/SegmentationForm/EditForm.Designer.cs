@@ -157,7 +157,8 @@
             this.SegmentationBox.FormattingEnabled = true;
             this.SegmentationBox.Items.AddRange(new object[] {
             "Sharp",
-            "Color"});
+            "Color",
+            "Sharp and Color"});
             this.SegmentationBox.Location = new System.Drawing.Point(50, 110);
             this.SegmentationBox.Margin = new System.Windows.Forms.Padding(50, 10, 50, 10);
             this.SegmentationBox.Name = "SegmentationBox";
@@ -189,7 +190,7 @@
             this.TetaBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.TetaBox.FormattingEnabled = true;
             this.TetaBox.Items.AddRange(new object[] {
-            "Harsh",
+            "Crooked",
             "Normal",
             "Smooth"});
             this.TetaBox.Location = new System.Drawing.Point(50, 310);

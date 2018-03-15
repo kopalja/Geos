@@ -81,6 +81,9 @@
     <ClInclude Include="SourceGeos\GaussianBlur.h">
       <Filter>Header Files\Geos</Filter>
     </ClInclude>
+    <ClInclude Include="ExtendedFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp">

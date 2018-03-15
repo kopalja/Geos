@@ -10,13 +10,20 @@ const double sqrt2 = 1.41421356237;
 /* v from paper eq. 9 */
 const double v = 200.0;
 
-SymmetricalFilter::SymmetricalFilter( __in double alfa, __in const Image *pGrayImage, __in const double **ppInputProbability )
+SymmetricalFilter::SymmetricalFilter( __in double alfa, __in const Image & rGrayImage ): m_rGrayImage(rGrayImage)
+{
+	m_NeedToDealoc = false;
+	m_Alfa = alfa;
+	m_Width = rGrayImage.width;
+	m_Height = rGrayImage.height;
+}
+
+SymmetricalFilter::SymmetricalFilter( __in double alfa, __in const Image & rGrayImage, __in const double **ppInputProbability ): m_rGrayImage( rGrayImage )
 {
 	m_NeedToDealoc = true;
 	m_Alfa = alfa;
-	m_pGrayImage = pGrayImage;
-	m_Width = pGrayImage->width;
-	m_Height = pGrayImage->height;
+	m_Width = rGrayImage.width;
+	m_Height = rGrayImage.height;
 
 
 	/* Aloc SignedDistance */
@@ -26,7 +33,7 @@ SymmetricalFilter::SymmetricalFilter( __in double alfa, __in const Image *pGrayI
 		m_ppSignedDistance[i] = new double[m_Height];
 	}
 	
-	CountSignedDistance( pGrayImage, ppInputProbability );
+	CountSignedDistance( ppInputProbability );
 }
 
 
@@ -45,7 +52,7 @@ SymmetricalFilter::~SymmetricalFilter()
 }
 
 
-void SymmetricalFilter::GetSymmetricalMask( __in int erosion, __in int dilation, __out bool **ppSymmetricalMask )
+void SymmetricalFilter::GetSymmetricalMask( __in double erosion, __in double dilation, __out bool **ppSymmetricalMask )
 {
 	/* Aloc dilation and erosion distance. All neede memory */
 	double **ppErosionDistance = new double*[m_Width];
@@ -87,9 +94,9 @@ void SymmetricalFilter::GetSymmetricalMask( __in int erosion, __in int dilation,
 
 
 
-void SymmetricalFilter::CountSignedDistance( __in const Image *pGrayImage, __in const double **ppInputProbability )
+void SymmetricalFilter::CountSignedDistance( __in const double **ppInputProbability )
 {
-	m_Alfa += 9.0;
+	//m_Alfa += 22.0;
 	/* Aloc distance to complement */
 	double **ppDistanceToObject = new double*[m_Width];
 	double **ppDistanceToComplement = new double*[m_Width];
@@ -100,16 +107,16 @@ void SymmetricalFilter::CountSignedDistance( __in const Image *pGrayImage, __in 
 	}
 
 	InitDistance( false, ppInputProbability, ppDistanceToObject );
-	//CountUnSignedDistance( pGrayImage, ppDistanceToObject );
-	//CountUnSignedDistance( pGrayImage, ppDistanceToObject );
-	//CountUnSignedDistance( pGrayImage, ppDistanceToObject );
-	//CountUnSignedDistance( pGrayImage, ppDistanceToObject );
+	CountUnSignedDistance( ppDistanceToObject );
+	CountUnSignedDistance( ppDistanceToObject );
+	CountUnSignedDistance( ppDistanceToObject );
+	CountUnSignedDistance( ppDistanceToObject );
 
 	InitDistance( true, ppInputProbability, ppDistanceToComplement );
-	//CountUnSignedDistance( pGrayImage, ppDistanceToComplement );
-	//CountUnSignedDistance( pGrayImage, ppDistanceToComplement );
-	//CountUnSignedDistance( pGrayImage, ppDistanceToComplement );
-	//CountUnSignedDistance( pGrayImage, ppDistanceToComplement );
+	CountUnSignedDistance( ppDistanceToComplement );
+	CountUnSignedDistance( ppDistanceToComplement );
+	CountUnSignedDistance( ppDistanceToComplement );
+	CountUnSignedDistance( ppDistanceToComplement );
 
 	/* Count signed distance */
 	for (int y = 0; y < m_Height; y++)
@@ -124,35 +131,35 @@ void SymmetricalFilter::CountSignedDistance( __in const Image *pGrayImage, __in 
 		delete[] ppDistanceToComplement[i];
 	}
 	delete[] ppDistanceToComplement;
-	m_Alfa -= 9.0;
+	//m_Alfa -= 22.0;
 }
 
 
 
-void SymmetricalFilter::CountUnSignedDistance( __in const Image *pGrayImage, __inout double **ppDistance, __in bool normalDistance )
+void SymmetricalFilter::CountUnSignedDistance( __inout double **ppDistance, __in bool normalDistance )
 {
-	int dxa = - pGrayImage->width - 1;
-	int dxb = - pGrayImage->width; 
-	int dxc = - pGrayImage->width + 1;
+	int dxa = - m_rGrayImage.width - 1;
+	int dxb = - m_rGrayImage.width; 
+	int dxc = - m_rGrayImage.width + 1;
 	int dxd = - 1; 
-	int index = pGrayImage->width;
+	int index = m_rGrayImage.width;
 	double da, db, dc, dd;
 	double d1, d2, d3, d4;
 
-	for (int y = 1; y < pGrayImage->height; y++)
+	for (int y = 1; y < m_rGrayImage.height; y++)
 	{
 		index++;
-		for (int x = 1; x < pGrayImage->width; x++)
+		for (int x = 1; x < m_rGrayImage.width; x++)
 		{
 			if ( normalDistance )
-				GrayBaseNeighborDistances( pGrayImage->buffer, index, dxa, dxb, dxc, dxd, &da, &db, &dc, &dd );
+				GrayBaseNeighborDistances( m_rGrayImage.buffer, index, dxa, dxb, dxc, dxd, &da, &db, &dc, &dd );
 			else
-				GrayBaseNeighborDistancesSharpArea( pGrayImage->buffer, index, dxa, dxb, dxc, dxd, &da, &db, &dc, &dd );
+				GrayBaseNeighborDistancesSharpArea( m_rGrayImage.buffer, index, dxa, dxb, dxc, dxd, &da, &db, &dc, &dd );
 
 
 			d1 = sqrt2 + m_Alfa * da + ppDistance[x - 1][y - 1];
 			d2 = 1.0 + m_Alfa * db + ppDistance[x][y - 1];
-			if ( x != pGrayImage->width - 1 )
+			if ( x != m_rGrayImage.width - 1 )
 				d3 = sqrt2 + m_Alfa * dc + ppDistance[x + 1][y - 1];
 			else
 				d3 = MAXINT32;
@@ -162,22 +169,22 @@ void SymmetricalFilter::CountUnSignedDistance( __in const Image *pGrayImage, __i
 			index++;
 		}
 	}
-	index -= pGrayImage->width;
+	index -= m_rGrayImage.width;
 	dxa = 1;
-	dxb = pGrayImage->width - 1; 
-	dxc = pGrayImage->width;
-	dxd = pGrayImage->width + 1; 
+	dxb = m_rGrayImage.width - 1; 
+	dxc = m_rGrayImage.width;
+	dxd = m_rGrayImage.width + 1; 
 
-	for (int y = pGrayImage->height - 2; y >= 0; y--)
+	for (int y = m_rGrayImage.height - 2; y >= 0; y--)
 	{
 		index--;
-		for (int x = pGrayImage->width - 2; x >= 0; x--)
+		for (int x = m_rGrayImage.width - 2; x >= 0; x--)
 		{
 			index--;
 			if ( normalDistance )
-				GrayBaseNeighborDistances( pGrayImage->buffer, index, dxa, dxb, dxc, dxd, &da, &db, &dc, &dd );
+				GrayBaseNeighborDistances( m_rGrayImage.buffer, index, dxa, dxb, dxc, dxd, &da, &db, &dc, &dd );
 			else
-				GrayBaseNeighborDistancesSharpArea( pGrayImage->buffer, index, dxa, dxb, dxc, dxd, &da, &db, &dc, &dd );
+				GrayBaseNeighborDistancesSharpArea( m_rGrayImage.buffer, index, dxa, dxb, dxc, dxd, &da, &db, &dc, &dd );
 
 
 			d1 = 1.0 + m_Alfa * da + ppDistance[x + 1][y];
@@ -217,46 +224,33 @@ void SymmetricalFilter::InitDistance( __in bool toComplement, __in const double 
 
 
 
-void SymmetricalFilter::CountErosion( __in int erosion, __out double **ppErosionDistance )
+void SymmetricalFilter::CountErosion( __in double erosion, __out double **ppErosionDistance )
 {
 	for (int y = 0; y < m_Height; y++)
 		for (int x = 0; x < m_Width; x++)
 		{
-			if ( m_ppSignedDistance[x][y] > - (double)erosion )
+			if ( m_ppSignedDistance[x][y] > - erosion )
 				ppErosionDistance[x][y] = MAXINT32;
 			else 
 				ppErosionDistance[x][y] = 0;
 		}
 
-	CountUnSignedDistance( m_pGrayImage, ppErosionDistance );
-	CountUnSignedDistance( m_pGrayImage, ppErosionDistance );
-	CountUnSignedDistance( m_pGrayImage, ppErosionDistance );
-	CountUnSignedDistance( m_pGrayImage, ppErosionDistance );
-	CountUnSignedDistance( m_pGrayImage, ppErosionDistance );
-	CountUnSignedDistance( m_pGrayImage, ppErosionDistance );
-	CountUnSignedDistance( m_pGrayImage, ppErosionDistance );
-	CountUnSignedDistance( m_pGrayImage, ppErosionDistance );
-
+	for (int i = 0; i < 8; i++)
+		CountUnSignedDistance( ppErosionDistance );
 }
 
-void SymmetricalFilter::CountDilation( __in int dilation, __out double **ppDilationDistance )
+void SymmetricalFilter::CountDilation( __in double dilation, __out double **ppDilationDistance )
 {
 	for (int y = 0; y < m_Height; y++)
 		for (int x = 0; x < m_Width; x++)
 		{
-			if ( m_ppSignedDistance[x][y] > (double)dilation )
+			if ( m_ppSignedDistance[x][y] > dilation )
 				ppDilationDistance[x][y] = 0;
 			else 
 				ppDilationDistance[x][y] = MAXINT32;
 		}
 
-	CountUnSignedDistance( m_pGrayImage, ppDilationDistance );
-	CountUnSignedDistance( m_pGrayImage, ppDilationDistance );
-	CountUnSignedDistance( m_pGrayImage, ppDilationDistance );
-	CountUnSignedDistance( m_pGrayImage, ppDilationDistance );
-	CountUnSignedDistance( m_pGrayImage, ppDilationDistance );
-	CountUnSignedDistance( m_pGrayImage, ppDilationDistance );
-	CountUnSignedDistance( m_pGrayImage, ppDilationDistance );
-	CountUnSignedDistance( m_pGrayImage, ppDilationDistance );
+	for (int i = 0; i < 8; i++)
+		CountUnSignedDistance( ppDilationDistance );
 
 }

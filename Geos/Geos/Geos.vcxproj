@@ -81,6 +81,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ExtendedFunctions.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SourceGeos\GaussianBlur.h" />
     <ClInclude Include="SourceGeos\Geos.h" />

@@ -4,11 +4,12 @@
 #include "GaussianBlur.h"
 #include "SymmetricalFilter.h"
 #include "..\SourceSharpness\S3.h"
+#include "ExtendedFunctions.h"
 
 
 enum SegmentationType
 {
-	Interactive, Sharpness, Color, Salience  	
+	Interactive, Sharpness, Color, Salience, SharpAndColor  	
 };
 
 class Location
@@ -41,8 +42,24 @@ private:
 
 	void SharpnessProbability(
 		__in const Image & rOrigin,
-		__out double ** ppProbability
+		__out double ** ppProbability,
+		__in bool UseModifySharpness2 = false
 		);
+
+	/* Modify pixels probability surrounded by sharp pixels */
+	void ModifySharpness1(
+		__in const Image & rS3Image,
+		__in const Image & rOrigin,
+		__inout double ** ppProbability
+		);
+
+	/* Modify pixels probability of the same color as sharp object */
+	void ModifySharpness2(
+		__in const Image & rS3Image,
+		__in const Image & rOrigin,
+		__inout double ** ppProbability
+		);
+
 
 	void SalienceProbability(
 		__in const Image & rOrigin,
@@ -67,8 +84,5 @@ private:
 		__in const Location * pSelectedPixel,
 		__out double ** ppProbability
 		);
-
-
-
 
 };

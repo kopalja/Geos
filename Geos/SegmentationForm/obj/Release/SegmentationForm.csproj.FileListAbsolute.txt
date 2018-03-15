@@ -9,3 +9,5 @@ C:\Users\User\Documents\GitHub\Geos\Geos\SegmentationForm\obj\Release\Segmentati
 C:\Users\User\Documents\GitHub\Geos\Geos\SegmentationForm\obj\Release\SegmentationForm.HelloForm.resources
 C:\Users\User\Documents\GitHub\Geos\Geos\SegmentationForm\obj\Release\SegmentationForm.SegmentationForm.resources
 C:\Users\User\Documents\GitHub\Geos\Geos\SegmentationForm\obj\Release\SegmentationForm.EditForm.resources
+C:\Users\User\Documents\GitHub\Geos\Geos\SegmentationForm\bin\Release\Geos.dll
+C:\Users\User\Documents\GitHub\Geos\Geos\SegmentationForm\bin\Release\Geos.pdb

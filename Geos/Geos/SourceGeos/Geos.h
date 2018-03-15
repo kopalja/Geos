@@ -7,6 +7,7 @@
 #include "Probability.h"
 #include <functional>
 
+
 class Location;
 
 
@@ -39,10 +40,6 @@ private:
 	bool m_RgbType;
 
 
-	void GrayScale(
-		__in const Image & rOrigin,
-		__out Image *pGrayImage
-		);
 
 
 	void GeodesicDistance(

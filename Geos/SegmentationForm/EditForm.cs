@@ -33,6 +33,8 @@ namespace SegmentationForm
                 EditParams.segmentationType = EditParams.Segmentationtype.Sharp;
             else if (SegmentationBox.GetItemChecked(1))
                 EditParams.segmentationType = EditParams.Segmentationtype.Color;
+            else if (SegmentationBox.GetItemChecked(2))
+                EditParams.segmentationType = EditParams.Segmentationtype.SharpAndColor;
         }
 
         private void TimeBox_SelectedIndexChanged(object sender, EventArgs e)

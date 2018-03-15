@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <math.h>
 #include "ImageHandler.h"
+#include "ExtendedFunctions.h"
 
 #include <iostream>
 using namespace std;
@@ -26,21 +27,32 @@ public:
 
 	void InteractiveProbability(
 		__in const Image & rImage,
-		__in bool ** ppLocation,
+		__in bool ** ppForeGround,
+		__in int numberOfForegroundSamples,
+		__in bool ** ppBackGround,
+		__in int numberOfBackGroundSamples,
 		__out double ** ppProbability
 		);
 
 	void init(
 		__in int nSizeK, 
-		__in int nSizeRecord, 
-		__in int nSizeFeature,
-		__in_bcount( numberOfPixels ) INPUTDATA_MULTI_GAUSS * ppDataList
+		__in int nSizeFeature
 		);
 
 	void train(
+		__in INPUTDATA_MULTI_GAUSS * ppData,
+		__in int dataSize
 		);
 
 private:
+
+	void CreateModel(
+		__in const Image & rImage,
+		__in int numberOfGaussian,
+		__in bool ** ppTrainData,
+		__in int numberOfSamples,
+		__out double ** ppProbabilityInModel
+		);
 
 	void i_step(
 		);
@@ -55,6 +67,13 @@ private:
 	inline double getgauss(
 		__in double dMean, 
 		__in double dVar,
+		__in double dValue
+		);
+
+	inline double getgaussFast(
+		__in double dMean, 
+		__in double dVar,
+		__in double var,
 		__in double dValue
 		);
 
@@ -82,5 +101,7 @@ private:
 	double ** m_ppVarFeatClass;				// covariation value of feature in each class
 
 	double * m_pProbClass;					// 𝑷(𝒄)
+
+	double getGaussVar[2][3];
 };
 

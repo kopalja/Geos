@@ -10,6 +10,9 @@ using namespace std;
 
 const double sqrt2 = 1.41421356237;
 
+
+
+
 Geos::Geos()
 {
 
@@ -37,7 +40,7 @@ void Geos::Process(
 		)
 {
 	HRESULT hr;
-	ImageHandler imageHandler( inputImagePath, "root.jpg", &hr );
+	ImageHandler imageHandler( inputImagePath, "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\results\\root.jpg", &hr );
 
 	if ( SUCCEEDED( hr ) )
 	{
@@ -53,52 +56,19 @@ void Geos::Process(
 		{
 			SetSegmentationParameters( sharpType, timeOptimalization, smoothness, colorRepresentation );
 			ImageSegmentation( const_cast<Image&>( *pOrigin ) );
-			//imageHandler.Save( pOrigin );
+			imageHandler.Save( pOrigin );
 		}
 		delete pOrigin;
 	}
 }
 
 
-void Geos::GrayScale( __in const Image & rOrigin, __out Image * pGrayImage )
-{
-	UINT byteDepth = 0;
-	if ( rOrigin.size == rOrigin.width * rOrigin.height * 3 )
-		byteDepth = 3;
-	else if ( rOrigin.size == rOrigin.width * rOrigin.height * 4 )
-		byteDepth = 4;
-	else if ( rOrigin.size == rOrigin.width * rOrigin.height )
-		byteDepth = 1;
-
-
-	_ASSERT( byteDepth == 1 || byteDepth == 3 || byteDepth == 4 );
-
-	if ( byteDepth == 1 )
-	{
-		for (int i = 0; i < pGrayImage->size; i++)
-		{
-			pGrayImage->buffer[i] = rOrigin.buffer[i];
-		}
-		return;
-	}
-
-	UINT j = 0;
-	for (int i = 0; i < pGrayImage->size; i++)
-	{
-		UINT rgbSum = 2989 * rOrigin.buffer[j + 2] + 5870 * rOrigin.buffer[j + 1] + 1140 * rOrigin.buffer[j];
-		pGrayImage->buffer[i] = rgbSum / 10000;
-		j += byteDepth;
-	}
-}
-
-
-
-
-
 
 
 void Geos::ImageSegmentation( __in const Image & rOrigin )
 {
+	clock_t begin = clock();
+
 	double ** ppProbability = new double*[rOrigin.width];
 	bool ** result = new bool*[rOrigin.width];
 	for (int i = 0; i < rOrigin.width; i++)
@@ -114,7 +84,14 @@ void Geos::ImageSegmentation( __in const Image & rOrigin )
 	Probability p;
 	p.GetProbabitily( m_SegmentationType, rOrigin, ppProbability );
 
+
 	MinimizeEnegry( rOrigin, ppProbability, result );
+
+
+	//Image *pGrayImage = new Image( rOrigin.width, rOrigin.height, rOrigin.width * rOrigin.height, new BYTE[rOrigin.width * rOrigin.height] );
+	//GrayScale( rOrigin, pGrayImage );
+	//SymmetricalFilter s( 0.2, const_cast<Image &>( *pGrayImage ), const_cast<const double **>( ppProbability ) );
+
 
 	m_width = rOrigin.width;
 	m_height = rOrigin.height;
@@ -140,6 +117,8 @@ void Geos::ImageSegmentation( __in const Image & rOrigin )
 			rOrigin.buffer[i] = ppProbability[x][y] * 255.0;
 			rOrigin.buffer[i + 1] = ppProbability[x][y] * 255.0;
 			rOrigin.buffer[i + 2] = ppProbability[x][y] * 255.0;
+
+
 			i += 3;
 			j ++;
 		}
@@ -150,37 +129,49 @@ void Geos::MinimizeEnegry( __in const Image & rOrigin, __in double ** ppProbabil
 {
 	Image *pGrayImage = new Image( rOrigin.width, rOrigin.height, rOrigin.width * rOrigin.height, new BYTE[rOrigin.width * rOrigin.height] );
 	GrayScale( rOrigin, pGrayImage );
-	SymmetricalFilter s( 0.2, pGrayImage, const_cast<const double **>( ppProbability ) );
+	SymmetricalFilter s( 5.0, const_cast<Image &>( *pGrayImage ), const_cast<const double **>( ppProbability ) );
+
+	bool ** ppNewLabeling = new bool*[rOrigin.width];
+	for (int i = 0; i < rOrigin.width; i++)
+	{
+		ppNewLabeling[i] = new bool[rOrigin.height];
+	}
 
 	int energy = MAXINT32;
 	int segmentationIndex;
 	int numberOfEnergies = ( 3 - m_TimeOptimalization ) * 2; // 2, 4, 6
-	int smoothness = ( m_Smoothness + 1 ) * 20; // 20, 40, 60
+	int smoothness = ( m_Smoothness ) * 40; // 20, 40, 60
 
-	int tetaDiameter = sqrt( rOrigin.width * rOrigin.height ) / 100 * ( m_Smoothness + 1 );
+	int tetaDiameter = sqrt( rOrigin.width * rOrigin.height ) / 100 * ( ( m_Smoothness * 5 ) + 1 );
 
 	for (int i = 1; i <= numberOfEnergies; i++)
 	{
-		int ans = tetaDiameter + tetaDiameter / i;
+		double ans = tetaDiameter + tetaDiameter / ( i + 1 );
 		if ( i % 2 == 1 )
-			ans = tetaDiameter - tetaDiameter / i;
+			ans = tetaDiameter - tetaDiameter / ( i + 1 );
 
 
-		s.GetSymmetricalMask( ans, ans + 16, ppLabeling );
-		int newEnergy = CountEnegry( const_cast<Image &>( *pGrayImage ), ppProbability, ppLabeling );
-		cout << "energi " << newEnergy << endl;
+		s.GetSymmetricalMask( ans, ans + 16, ppNewLabeling );
+		int newEnergy = CountEnegry( const_cast<Image &>( *pGrayImage ), ppProbability, ppNewLabeling );
 		if ( newEnergy < energy )
 		{
 			energy = newEnergy; 
 			segmentationIndex = i;
+			for (int y = 0; y < rOrigin.height; y++)
+			{
+				for (int x = 0; x < rOrigin.width; x++)
+				{
+					ppLabeling[x][y] = ppNewLabeling[x][y];
+				}
+			}
 		}
 	}
-
-	int ans = tetaDiameter + tetaDiameter / segmentationIndex;
-	if ( segmentationIndex % 2 == 1 )
-		ans = tetaDiameter - tetaDiameter / segmentationIndex;
-	s.GetSymmetricalMask( ans, ans + 16, ppLabeling );
-	cout << "teta " << segmentationIndex << endl;
+	for (int i = 0; i < rOrigin.width; i++)
+	{
+		delete ppNewLabeling[i];
+	}
+	delete ppNewLabeling;
+	delete pGrayImage;
 }
 
 double Geos::CountEnegry( __in const Image & rGrayImage, __in double ** ppProbability, __in bool ** ppLabeling )
@@ -188,7 +179,7 @@ double Geos::CountEnegry( __in const Image & rGrayImage, __in double ** ppProbab
 	double energyU = 0.0;
 	double energyV = 0.0;
 	double teta = 1.0;
-	double n = 200.0;
+	double n = 4.0;
 
 	// Energy of U(z, a)
 	for (int y = 0; y < rGrayImage.height; y++)
@@ -202,23 +193,25 @@ double Geos::CountEnegry( __in const Image & rGrayImage, __in double ** ppProbab
 		}
 	}
 	energyU *= -1.0;
-
+	double temp;
 	// Enegry of V(z, a)
 	for (int y = 0; y < rGrayImage.height - 1; y++)
 	{
 		for (int x = 1; x < rGrayImage.width - 1; x++)
 		{
+			temp = -1.0 * ( abs( rGrayImage.buffer[ y * rGrayImage.width + x] - rGrayImage.buffer[ y * rGrayImage.width + x + 1] ) >> 2 );
 			if ( ppLabeling[x][y] != ppLabeling[x + 1][y] )
-				energyV += exp( -1.0 * abs( rGrayImage.buffer[ y * rGrayImage.width + x] - rGrayImage.buffer[ y * rGrayImage.width + x + 1] ) / n );
+				energyV += expApproximation( -1 * ( abs( rGrayImage.buffer[ y * rGrayImage.width + x] - rGrayImage.buffer[ y * rGrayImage.width + x + 1] ) >> 2 ) );
 			if ( ppLabeling[x][y] != ppLabeling[x - 1][y + 1] )
-				energyV += exp( -1.0 * abs( rGrayImage.buffer[ y * rGrayImage.width + x] - rGrayImage.buffer[ (y + 1) * rGrayImage.width + x - 1] ) / n ); 
+				energyV += expApproximation( -1 * ( abs( rGrayImage.buffer[ y * rGrayImage.width + x] - rGrayImage.buffer[ (y + 1) * rGrayImage.width + x - 1] ) >> 2 ) ); 
 			if ( ppLabeling[x][y] != ppLabeling[x + 0][y + 1] )
-				energyV += exp( -1.0 * abs( rGrayImage.buffer[ y * rGrayImage.width + x] - rGrayImage.buffer[ (y + 1) * rGrayImage.width + x + 0] ) / n ); 
+				energyV += expApproximation( -1 * ( abs( rGrayImage.buffer[ y * rGrayImage.width + x] - rGrayImage.buffer[ (y + 1) * rGrayImage.width + x + 0] ) >> 2 ) ); 
 			if ( ppLabeling[x][y] != ppLabeling[x + 1][y + 1] )
-				energyV += exp( -1.0 * abs( rGrayImage.buffer[ y * rGrayImage.width + x] - rGrayImage.buffer[ (y + 1) * rGrayImage.width + x + 1] ) / n ); 
+				energyV += expApproximation( -1 * ( abs( rGrayImage.buffer[ y * rGrayImage.width + x] - rGrayImage.buffer[ (y + 1) * rGrayImage.width + x + 1] ) >> 2 ) ); 
 		}
 	}
 	energyV *= -1;
+
 
 	return energyU + teta * energyV;
 }
@@ -227,7 +220,7 @@ double Geos::CountEnegry( __in const Image & rGrayImage, __in double ** ppProbab
 
 void Geos::SetSegmentationParameters( __in int sharpType, __in int timeOptimalization, __in int smoothness, __in int colorRepresentation )
 {
-	_ASSERT( sharpType == 0 || sharpType == 1 );
+	_ASSERT( sharpType == 0 || sharpType == 1 || sharpType == 2 );
 	_ASSERT( timeOptimalization == 0 || timeOptimalization == 1 || timeOptimalization == 2 );
 	_ASSERT( smoothness == 0 || smoothness == 1 || smoothness == 2 );
 	_ASSERT( colorRepresentation == 0 || colorRepresentation == 1 );
@@ -235,8 +228,10 @@ void Geos::SetSegmentationParameters( __in int sharpType, __in int timeOptimaliz
 
 	if ( sharpType == 0 )
 		m_SegmentationType = SegmentationType::Sharpness;
-	else
+	else if ( sharpType == 1 )
 		m_SegmentationType = SegmentationType::Color;
+	else if ( sharpType == 2 )
+		m_SegmentationType = SegmentationType::SharpAndColor;
 
 	m_TimeOptimalization = timeOptimalization;
 	m_Smoothness = smoothness;
@@ -280,9 +275,9 @@ void Geos::SetPixelProbability( __in const Image & pInteractiveImage, __in const
 			if (ppProbability[x][y] < 0 ) ppProbability[x][y] = 0;
 			if (ppProbability[x][y] > 1 ) ppProbability[x][y] = 1;
 
-			//double log2 = log( 2.0 );
-			//double lp = log( ppProbability[x][y] ) / log2 - log( ppBgProbability[x][y] ) / log2;
-			//ppProbability[x][y] = 1 / pow( 1 + exp( -lp / 5 ), 3);
+			double log2 = log( 2.0 );
+			double lp = log( ppProbability[x][y] ) / log2 - log( ppBgProbability[x][y] ) / log2;
+			ppProbability[x][y] = 1 / pow( 1 + exp( -lp / 5 ), 3);
 
 		}
 	}
@@ -330,11 +325,11 @@ void Geos::SetAreaProbability( __in const Image * pGrayImage, __in const Image &
 
 	GMM gmm;
 	/* Color base probability */
-	gmm.InteractiveProbability( pOrigin, ppLocations, ppProbability );
+	//gmm.InteractiveProbability( pOrigin, ppLocations, ppProbability );
 
-	SymmetricalFilter s(1.8, pGrayImage, const_cast< const double **>( ppDistance ) );
-	s.CountUnSignedDistance( pGrayImage, ppDistance );
-	s.CountUnSignedDistance( pGrayImage, ppDistance );
+	SymmetricalFilter s(1.8, const_cast<Image &>( *pGrayImage ), const_cast< const double **>( ppDistance ) );
+	//s.CountUnSignedDistance( pGrayImage, ppDistance );
+	//s.CountUnSignedDistance( pGrayImage, ppDistance );
 	
 	double max = 0;
 	for (int y = 1; y < pGrayImage->height - 1; y++)

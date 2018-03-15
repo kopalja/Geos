@@ -24,7 +24,7 @@ namespace SegmentationForm
             InitializeComponent();
 
             InviteLabel.Font = new Font(FontFamily.GenericSansSerif, 14);
-            InviteLabel.Text = "This is image binary segmentation program.  Press Start to choose image";
+            InviteLabel.Text = "Hello";
 
 
             InviteLabel.Location = new Point(this.Width / 2 - InviteLabel.Width / 2, 100);
@@ -44,6 +44,11 @@ namespace SegmentationForm
         {
             nextForm = true;
             this.Close();
+        }
+
+        private void HelloForm_Load_1(object sender, EventArgs e)
+        {
+
         }
     }
 }

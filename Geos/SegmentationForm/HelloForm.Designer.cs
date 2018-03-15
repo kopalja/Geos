@@ -57,6 +57,7 @@
             this.Controls.Add(this.StartButton);
             this.Controls.Add(this.InviteLabel);
             this.Name = "HelloForm";
+            this.Load += new System.EventHandler(this.HelloForm_Load_1);
             this.ResumeLayout(false);
             this.PerformLayout();
 

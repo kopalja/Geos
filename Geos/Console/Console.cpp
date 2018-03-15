@@ -40,7 +40,7 @@ int main( int argc, char* argv[] )
 
 	//g.Process( "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\bird3.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\bird3.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\results\\out14.jpg", 0, 0 );
 
-	//g.Process( "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\flower2.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\flower2.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\results\\out16.jpg", 0, 0 );
+	g.Process( "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\flower2.jpg",  nullptr, nullptr, 2, 1, 1, 1 );
 
 
 

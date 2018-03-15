@@ -125,7 +125,9 @@ namespace SegmentationForm
 
         private void SaveStrip_Click(object sender, EventArgs e)
         {
-            resultImage.Save(saveImagePath);
+            if ( saveImagePath != "")
+                resultImage.Save(saveImagePath);
+
         }
 
         private void SaveAsStrip_Click(object sender, EventArgs e)
@@ -149,11 +151,11 @@ namespace SegmentationForm
                         Bitmap output = resultImage.Clone(r, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
                         output.MakeTransparent(Color.White);
                         output.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+                        saveImagePath = saveDialog.FileName;
                     }
                     stream.Close();
                 }
             }
-            saveImagePath = saveDialog.FileName;
         }
 
         private void SwitchStrip_Click(object sender, EventArgs e)
@@ -434,8 +436,8 @@ namespace SegmentationForm
 
     static class EditParams
     {
-        public enum Segmentationtype { Sharp = 0, Color = 1 }
-        public static Segmentationtype segmentationType = Segmentationtype.Sharp;
+        public enum Segmentationtype { Sharp = 0, Color = 1, SharpAndColor = 2 }
+        public static Segmentationtype segmentationType = Segmentationtype.SharpAndColor;
 
         public enum TimeOptimalization { Low = 0, Medium = 1, High = 2 }
         public static TimeOptimalization timeOptimalization = TimeOptimalization.Medium;

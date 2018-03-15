@@ -1,5 +1,4 @@
-#include "Probability.h"	
-
+#include "Probability.h"
 #include <ctime>
 
 void Probability::GetProbabitily( __in SegmentationType segmentationType, __in const Image & rOrigin, __out double ** ppProbability, __in const Location * pForeground, __in const Location * pBackground )
@@ -14,6 +13,11 @@ void Probability::GetProbabitily( __in SegmentationType segmentationType, __in c
 	case Sharpness:
 		{
 			SharpnessProbability( rOrigin, ppProbability );
+			break;
+		}
+	case SharpAndColor:
+		{
+			SharpnessProbability( rOrigin, ppProbability, true );
 			break;
 		}
 	case Color:
@@ -55,8 +59,11 @@ void Probability::InteractiveProbability( __in const Image & rOrigin, __in const
 }
 
 
-void Probability::SharpnessProbability( __in const Image & rOrigin, __out double ** ppProbability )
+void Probability::SharpnessProbability( __in const Image & rOrigin, __out double ** ppProbability, __in bool UseModifySharpness2 )
 {
+	clock_t time = clock();
+	cout << clock() - time << endl;
+	time = clock();
 	int xDivisible = rOrigin.width, yDivisible = rOrigin.height;
 
 	if (rOrigin.width % 8 != 0)
@@ -64,68 +71,146 @@ void Probability::SharpnessProbability( __in const Image & rOrigin, __out double
 	if (rOrigin.height % 8 != 0)
 		yDivisible = rOrigin.height + ( 8 - ( rOrigin.height % 8 ) );
 
-
-
-	
-
 	S3 s3;
 	Image *pGrayImage = new Image( xDivisible, yDivisible, xDivisible * yDivisible , new BYTE[xDivisible * yDivisible] );
-	Image *pResultImage = new Image( xDivisible / 4, yDivisible / 4, ( xDivisible * yDivisible ) / 16, new BYTE[( xDivisible * yDivisible ) / 16] );
+	Image *pS3Image = new Image( xDivisible / 4, yDivisible / 4, ( xDivisible * yDivisible ) / 16, new BYTE[( xDivisible * yDivisible ) / 16] );
 	s3.GrayScale( rOrigin, pGrayImage );
-	s3.GrayToResult( ResultType::S3Image, 2, false, const_cast<Image &>( *pGrayImage ), pResultImage );
+	s3.GrayToResult( ResultType::S3Image, 2, false, const_cast<Image &>( *pGrayImage ), pS3Image );
 
-	for (int i = 1; i < pResultImage->height; i++)
+	cout << "s3 " << clock() - time << endl;
+	time = clock();
+
+	for (int i = 1; i < pS3Image->height; i++)
 	{
-		pResultImage->buffer[( i * pResultImage->width ) - 1] = 0;
-		pResultImage->buffer[( i * pResultImage->width ) - 2] = 0;
+		pS3Image->buffer[( i * pS3Image->width ) - 1] = 0;
+		pS3Image->buffer[( i * pS3Image->width ) - 2] = 0;
 	}
 
 	for (int y = 0; y < rOrigin.height; y++)
 	{
 		for (int x = 0; x < rOrigin.width; x++)
 		{
-			ppProbability[x][y] = (double)pResultImage->buffer[ ( y >> 2 ) * pResultImage->width + ( x >> 2 ) ] / 255.0;
+			ppProbability[x][y] = (double)pS3Image->buffer[ ( y >> 2 ) * pS3Image->width + ( x >> 2 ) ] / 255.0;
 		}
 	}
-
-	/* Fill probability inside sharp area */
-	double ** ppDistance = new double*[pResultImage->width];
-	for (int i = 0; i < pResultImage->width; i++)
+	ModifySharpness1( const_cast<Image &>( *pS3Image ), rOrigin, ppProbability );
+	cout << "m1 " << clock() - time << endl;
+	time = clock();
+	if ( UseModifySharpness2 )
 	{
-		ppDistance[i] = new double[pResultImage->height];
+		ModifySharpness2( const_cast<Image &>( *pS3Image ), rOrigin, ppProbability );
+		cout << "m2 " << clock() - time << endl;
+		time = clock();
+	}
+	delete pGrayImage;
+	delete pS3Image;
+}
+
+
+void Probability::ModifySharpness1( __in const Image & rS3Image, __in const Image & rOrigin, __inout double ** ppProbability )
+{
+	/* Fill probability inside sharp area */
+	double ** ppDistance = new double*[rS3Image.width];
+	for (int i = 0; i < rS3Image.width; i++)
+	{
+		ppDistance[i] = new double[rS3Image.height];
 	}
 	
-	SymmetricalFilter symmetricalFilter( 1.0 );
-	InitDistance( pResultImage->width, pResultImage->height, ppDistance );
+	SymmetricalFilter symmetricalFilter( 1.0, rS3Image );
+	InitDistance( rS3Image.width, rS3Image.height, ppDistance );
 
-	symmetricalFilter.CountUnSignedDistance( pResultImage, ppDistance, false );
-	symmetricalFilter.CountUnSignedDistance( pResultImage, ppDistance, false );
-	symmetricalFilter.CountUnSignedDistance( pResultImage, ppDistance, false );
-	symmetricalFilter.CountUnSignedDistance( pResultImage, ppDistance, false );
-	symmetricalFilter.CountUnSignedDistance( pResultImage, ppDistance, false );
-	symmetricalFilter.CountUnSignedDistance( pResultImage, ppDistance, false );
+	for (int i = 0; i < 6; i++)
+		symmetricalFilter.CountUnSignedDistance( ppDistance, false );
 
 	for (int y = 0; y < rOrigin.height; y++)
 	{
 		for (int x = 0; x < rOrigin.width; x++)
 		{
-			if ( ppDistance[x >> 2][y >> 2] > 80000 )
+			if ( ppDistance[x >> 2][y >> 2] > 100000 )
 			{
-				ppProbability[x][y] = max( ppProbability[x][y], ( ppDistance[x >> 2][y >> 2] - 80000.0 ) / 150000.0 ); 
+				ppProbability[x][y] = max( ppProbability[x][y], ( ppDistance[x >> 2][y >> 2] - 100000.0 ) / 700000.0 ); 
 				if ( ppProbability[x][y] > 1.0 )
 					ppProbability[x][y] = 1.0;
 			}
 		}
 	}
 
-	for (int i = 0; i < pResultImage->width; i++)
+	for (int i = 0; i < rS3Image.width; i++)
 	{
 		delete ppDistance[i];
 	}
 	delete ppDistance;
-	delete pGrayImage;
-	delete pResultImage;
 }
+
+void Probability::ModifySharpness2( __in const Image & rS3Image, __in const Image & rOrigin, __inout double ** ppProbability )
+{
+	bool ** ppForeGroundLocation = new bool*[rOrigin.width];
+	bool ** ppBackGroundLocation = new bool*[rOrigin.width];
+	double ** ppGmmProbability = new double*[rOrigin.width];
+	for (int i = 0; i < rOrigin.width; i++)
+	{
+		ppForeGroundLocation[i] = new bool[rOrigin.height];
+		ppBackGroundLocation[i] = new bool[rOrigin.height];
+		ppGmmProbability[i] = new double[rOrigin.height];
+	}
+
+	int numberOfForegroundSamples = 0;
+	int numberOfBackgroundSamples = 0;
+	for (int y = 0; y < rOrigin.height; y++)
+	{
+		for (int x = 0; x < rOrigin.width; x++)
+		{
+
+			if ( ppProbability[x][y] > 0.95 )
+			{
+				ppForeGroundLocation[x][y] = true;
+				numberOfForegroundSamples++;
+			}
+			else
+			{
+				ppForeGroundLocation[x][y] = false;
+			}
+			if ( ppProbability[x][y] < 0.05 )
+			{
+				ppBackGroundLocation[x][y] = true;
+				numberOfBackgroundSamples++;
+			}
+			else
+			{
+				ppBackGroundLocation[x][y] = false;
+			}
+		}
+	}
+	GMM g;
+	
+	g.InteractiveProbability( rOrigin, ppForeGroundLocation, numberOfForegroundSamples, ppBackGroundLocation, numberOfBackgroundSamples, ppGmmProbability );
+
+	Image *pGrayImage = new Image( rOrigin.width, rOrigin.height, rOrigin.width * rOrigin.height, new BYTE[rOrigin.width * rOrigin.height] );
+	GrayScale( rOrigin, pGrayImage );
+	SymmetricalFilter s( 2.0, const_cast<Image &>( *pGrayImage ), const_cast<const double **>( ppProbability ) );
+
+	for (int y = 0; y < rOrigin.height; y++)
+	{
+		for (int x = 0; x < rOrigin.width; x++)
+		{
+			double temp = s.m_ppSignedDistance[x][y] + 200;
+			temp = ( 400 - temp ) / 400.0;
+
+			ppProbability[x][y] = ( ppProbability[x][y] + ppGmmProbability[x][y] + temp ) / 3;
+		}
+	}
+
+	for (int i = 0; i < rOrigin.width; i++)
+	{
+		delete[] ppForeGroundLocation[i];
+		delete[] ppBackGroundLocation[i];
+		delete[] ppGmmProbability[i];
+	}
+	delete[] ppForeGroundLocation;
+	delete[] ppBackGroundLocation;
+	delete[] ppGmmProbability;
+}
+
 
 void Probability::SalienceProbability( __in const Image & rOrigin, __out double ** ppProbability )
 {
@@ -199,3 +284,4 @@ void Probability::SegmentInteractive( __in const Image & rOrigin, __in const Loc
 {
 
 }
+
