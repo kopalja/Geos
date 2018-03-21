@@ -28,6 +28,13 @@ Geos::~Geos()
 }
 
 
+int f(int x)
+{
+	if (x == 1)
+		return 1;
+	return x * f(x - 1);
+}
+
 
 void Geos::Process( 
 		__in const char *inputImagePath,
@@ -39,26 +46,31 @@ void Geos::Process(
 		__in int colorRepresentation
 		)
 {
-	HRESULT hr;
-	ImageHandler imageHandler( inputImagePath, "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\results\\root.jpg", &hr );
+	int x = f(3);
 
-	if ( SUCCEEDED( hr ) )
+	if (x < 2)
 	{
-		/* Aloc origin image */
-		Image *pOrigin = new Image(
-			imageHandler.InputImageWidth(), 
-			imageHandler.InputImageHeight(), 
-			imageHandler.InputImageWidth() * imageHandler.InputImageHeight() * imageHandler.InputImageByteDepth(),
-			new BYTE[imageHandler.InputImageWidth() * imageHandler.InputImageHeight() * imageHandler.InputImageByteDepth()] 
-		);
-		hr = imageHandler.Create( pOrigin );
-		if ( SUCCEEDED( hr ) )
+		HRESULT hr;
+		ImageHandler imageHandler(inputImagePath, "C:\\Users\\kopi\\root.jpg", &hr);
+
+		if (SUCCEEDED(hr))
 		{
-			SetSegmentationParameters( sharpType, timeOptimalization, smoothness, colorRepresentation );
-			ImageSegmentation( const_cast<Image&>( *pOrigin ), rForeGround, rBackGround );
-			imageHandler.Save( pOrigin );
+			/* Aloc origin image */
+			Image *pOrigin = new Image(
+				imageHandler.InputImageWidth(),
+				imageHandler.InputImageHeight(),
+				imageHandler.InputImageWidth() * imageHandler.InputImageHeight() * imageHandler.InputImageByteDepth(),
+				new BYTE[imageHandler.InputImageWidth() * imageHandler.InputImageHeight() * imageHandler.InputImageByteDepth()]
+			);
+			hr = imageHandler.Create(pOrigin);
+			if (SUCCEEDED(hr))
+			{
+				SetSegmentationParameters(sharpType, timeOptimalization, smoothness, colorRepresentation);
+				ImageSegmentation(const_cast<Image&>(*pOrigin), rForeGround, rBackGround);
+				imageHandler.Save(pOrigin);
+			}
+			delete pOrigin;
 		}
-		delete pOrigin;
 	}
 }
 
