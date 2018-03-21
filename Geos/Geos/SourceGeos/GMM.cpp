@@ -116,10 +116,8 @@ void GMM::AutomaticProbability( __in const Image & rImage, __out double ** ppPro
 
 void GMM::InteractiveProbability( 		
 		__in const Image & rImage,
-		__in bool ** ppForeGround,
-		__in int numberOfForegroundSamples,
-		__in bool ** ppBackGround,
-		__in int numberOfBackGroundSamples,
+		__in const vector<Location> & rForeGround,
+		__in const vector<Location> & rBackGround,
 		__out double ** ppProbability 
 		)
 {
@@ -132,8 +130,8 @@ void GMM::InteractiveProbability(
 	/* number of gaussians, size of feature */
 	init( 2, 3 );
 
-	CreateModel( rImage, 2, ppForeGround, numberOfForegroundSamples, ppProbability );
-	CreateModel( rImage, 2, ppBackGround, numberOfBackGroundSamples, tempProbability );
+	CreateModel( rImage, 2, rForeGround, ppProbability );
+	CreateModel( rImage, 2, rBackGround, tempProbability );
 
 	for (int y = 0; y < rImage.height; y++)
 	{
@@ -148,30 +146,43 @@ void GMM::InteractiveProbability(
 		delete tempProbability[i];
 	}
 	delete tempProbability;
+	
 }
 
 
-void GMM::CreateModel( __in const Image & rImage, __in int numberOfGaussian, __in bool ** ppTrainData, __in int numberOfSamples, __out double ** ppProbabilityInModel )
+void GMM::CreateModel( __in const Image & rImage, __in int numberOfGaussian, __in const vector<Location> & rTrainData, __out double ** ppProbabilityInModel )
 {
 	double * pLab = new double[3];
+	int numberOfSamples = rTrainData.size();
 	INPUTDATA_MULTI_GAUSS * ppData = new INPUTDATA_MULTI_GAUSS[numberOfSamples];
 	UINT i = 0;
-	for (int y = 0; y < rImage.height; y++)
-	{
-		for (int x = 0; x < rImage.width; x++)
-		{
-			if ( ppTrainData[x][y] )
-			{
-				int index = ( y * rImage.width + x ) * 3;
 
-				ppData[i].L = rImage.buffer[index + 2];
-				ppData[i].A = rImage.buffer[index + 1];
-				ppData[i].B = rImage.buffer[index + 0];
-				ppData[i].nClass = -1;
-				i++;
-			}
-		}
+	for (int i = 0; i < numberOfSamples; i++)
+	{
+		int index = ( rTrainData.at( i ).y * rImage.width + rTrainData.at( i ).x ) * 3;
+		ppData[i].L = rImage.buffer[index + 2];
+		ppData[i].A = rImage.buffer[index + 1];
+		ppData[i].B = rImage.buffer[index + 0];
+		ppData[i].nClass = -1;
 	}
+
+	//for (int y = 0; y < rImage.height; y++)
+	//{
+	//	for (int x = 0; x < rImage.width; x++)
+	//	{
+	//		if ( ppTrainData[x][y] )
+	//		{
+	//			int index = ( y * rImage.width + x ) * 3;
+
+	//			ppData[i].L = rImage.buffer[index + 2];
+	//			ppData[i].A = rImage.buffer[index + 1];
+	//			ppData[i].B = rImage.buffer[index + 0];
+	//			ppData[i].nClass = -1;
+	//			i++;
+	//		}
+	//	}
+	//}
+
 	train( ppData, numberOfSamples);
 	double *pProbability = new double[m_nSizeK];
 	for (int y = 0; y < rImage.height; y++)

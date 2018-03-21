@@ -1,15 +1,10 @@
 #include "Probability.h"
 #include <ctime>
 
-void Probability::GetProbabitily( __in SegmentationType segmentationType, __in const Image & rOrigin, __out double ** ppProbability, __in const Location * pForeground, __in const Location * pBackground )
+void Probability::GetProbabitily( __in SegmentationType segmentationType, __in const Image & rOrigin, __in const Image & rGrayImage, __in const vector<Location> & rForeground, __in const vector<Location> & rBackground, __out double ** ppProbability )
 {
 	switch ( segmentationType )
 	{
-	case Interactive:
-		{
-			InteractiveProbability( rOrigin, pForeground, pBackground, ppProbability );
-			break;
-		}
 	case Sharpness:
 		{
 			SharpnessProbability( rOrigin, ppProbability );
@@ -32,31 +27,82 @@ void Probability::GetProbabitily( __in SegmentationType segmentationType, __in c
 			break;
 		}
 	}
+
+	/* in case of interactive probability */
+	if ( rForeground.size() > 0 && rBackground.size() > 0 )
+		InteractiveProbability( rOrigin, rGrayImage, rForeground, rBackground, ppProbability );
 }
 
-void Probability::InteractiveProbability( __in const Image & rOrigin, __in const Location * pForeground, __in const Location * pBackground, __out double ** ppProbability )
+
+
+void Probability::InteractiveProbability( __in const Image & rOrigin, __in const Image & rGrayImage, __in const vector<Location> & rForeGround, __in const vector<Location> & rBackGround, __inout double ** ppProbability )
 {
-	SegmentInteractive( rOrigin, pForeground, ppProbability );
-
-	double ** ppBackgroundProbability = new double*[rOrigin.width];
+	double MAX_DISTANCE = 700.0;
+	double ** ppForeGroundDistance = new double*[rOrigin.width];
+	double ** ppBackGroundDistance = new double*[rOrigin.width];
 	for (int i = 0; i < rOrigin.width; i++)
-		ppBackgroundProbability[i] = new double[rOrigin.height];
+	{
+		ppForeGroundDistance[i] = new double[rOrigin.height];
+		ppBackGroundDistance[i] = new double[rOrigin.height];
+	}
 
-	SegmentInteractive( rOrigin, pForeground, ppBackgroundProbability );
+	for (int y = 0; y < rOrigin.height; y++)
+		for (int x = 0; x < rOrigin.width; x++)
+		{
+			ppForeGroundDistance[x][y] = MAX_DISTANCE;
+			ppBackGroundDistance[x][y] = MAX_DISTANCE;
+		}
+
+	for (int i = 0; i < rForeGround.size(); i++)
+	{
+		ppForeGroundDistance[rForeGround.at( i ).x][rForeGround.at( i ).y] = 0; 
+	}
+	for (int i = 0; i < rBackGround.size(); i++)
+	{
+		ppBackGroundDistance[rBackGround.at( i ).x][rBackGround.at( i ).y] = 0; 
+	}
+
+	SymmetricalFilter s( 2.0, rGrayImage );
+	s.CountUnSignedDistance( ppForeGroundDistance );
+	s.CountUnSignedDistance( ppForeGroundDistance );
+	s.CountUnSignedDistance( ppForeGroundDistance );
+
+	s.CountUnSignedDistance( ppBackGroundDistance );
+	s.CountUnSignedDistance( ppBackGroundDistance );
+	s.CountUnSignedDistance( ppBackGroundDistance );
+
+
+	double ** ppGmmProbability = new double*[rOrigin.width];
+	for (int i = 0; i < rOrigin.width; i++)
+	{
+		ppGmmProbability[i] = new double[rOrigin.height];
+	}
+
+	GMM g;
+	g.InteractiveProbability( rOrigin, rForeGround, rBackGround, ppGmmProbability );
+
 
 	for (int y = 0; y < rOrigin.height; y++)
 	{
 		for (int x = 0; x < rOrigin.width; x++)
 		{
-			ppProbability[x][y] = log( ppProbability[x][y] ) - log( ppBackgroundProbability[x][y] );
-			ppProbability[x][y] = 1.0 / ( 1.0 + exp( - ppProbability[x][y] / 10.0 ) );
+			double temp = 1.0 - ( MAX_DISTANCE + ppForeGroundDistance[x][y] - ppBackGroundDistance[x][y] ) / ( MAX_DISTANCE * 2.0 );
+
+			ppProbability[x][y] = ( ppProbability[x][y] + ppGmmProbability[x][y] + temp ) / 3;
 		}
 	}
 
+
 	for (int i = 0; i < rOrigin.width; i++)
-		delete ppBackgroundProbability[i];
-	delete ppBackgroundProbability;
+	{
+		delete[] ppGmmProbability[i];
+	}
+	delete[] ppGmmProbability;
 }
+
+
+
+
 
 
 void Probability::SharpnessProbability( __in const Image & rOrigin, __out double ** ppProbability, __in bool UseModifySharpness2 )
@@ -144,46 +190,23 @@ void Probability::ModifySharpness1( __in const Image & rS3Image, __in const Imag
 
 void Probability::ModifySharpness2( __in const Image & rS3Image, __in const Image & rOrigin, __inout double ** ppProbability )
 {
-	bool ** ppForeGroundLocation = new bool*[rOrigin.width];
-	bool ** ppBackGroundLocation = new bool*[rOrigin.width];
+	int numberOfForegroundSamples = 0;
+	int numberOfBackgroundSamples = 0;
 	double ** ppGmmProbability = new double*[rOrigin.width];
 	for (int i = 0; i < rOrigin.width; i++)
 	{
-		ppForeGroundLocation[i] = new bool[rOrigin.height];
-		ppBackGroundLocation[i] = new bool[rOrigin.height];
 		ppGmmProbability[i] = new double[rOrigin.height];
 	}
 
-	int numberOfForegroundSamples = 0;
-	int numberOfBackgroundSamples = 0;
-	for (int y = 0; y < rOrigin.height; y++)
-	{
-		for (int x = 0; x < rOrigin.width; x++)
-		{
+	vector<Location> * pForeGround = new vector<Location>();
+	vector<Location> * pBackGround = new vector<Location>();
 
-			if ( ppProbability[x][y] > 0.95 )
-			{
-				ppForeGroundLocation[x][y] = true;
-				numberOfForegroundSamples++;
-			}
-			else
-			{
-				ppForeGroundLocation[x][y] = false;
-			}
-			if ( ppProbability[x][y] < 0.05 )
-			{
-				ppBackGroundLocation[x][y] = true;
-				numberOfBackgroundSamples++;
-			}
-			else
-			{
-				ppBackGroundLocation[x][y] = false;
-			}
-		}
-	}
+	SetSamples( rOrigin.width, rOrigin.height, ppProbability, pForeGround, pBackGround );
+
+
 	GMM g;
 	
-	g.InteractiveProbability( rOrigin, ppForeGroundLocation, numberOfForegroundSamples, ppBackGroundLocation, numberOfBackgroundSamples, ppGmmProbability );
+	g.InteractiveProbability( rOrigin, const_cast<vector<Location>&>( *pForeGround ), const_cast<vector<Location>&>( *pBackGround ), ppGmmProbability );
 
 	Image *pGrayImage = new Image( rOrigin.width, rOrigin.height, rOrigin.width * rOrigin.height, new BYTE[rOrigin.width * rOrigin.height] );
 	GrayScale( rOrigin, pGrayImage );
@@ -202,12 +225,10 @@ void Probability::ModifySharpness2( __in const Image & rS3Image, __in const Imag
 
 	for (int i = 0; i < rOrigin.width; i++)
 	{
-		delete[] ppForeGroundLocation[i];
-		delete[] ppBackGroundLocation[i];
 		delete[] ppGmmProbability[i];
 	}
-	delete[] ppForeGroundLocation;
-	delete[] ppBackGroundLocation;
+	delete pForeGround;
+	delete pBackGround;
 	delete[] ppGmmProbability;
 }
 

@@ -2,6 +2,7 @@
 #include <math.h>
 #include "ImageHandler.h"
 #include "ExtendedFunctions.h"
+#include <vector>
 
 #include <iostream>
 using namespace std;
@@ -12,6 +13,21 @@ typedef struct inputdata_multi_gauss {
 	double B;
 	int nClass;
 } INPUTDATA_MULTI_GAUSS;
+
+class Location
+{
+public:
+	inline Location(){};
+
+	inline Location( int x, int y )
+	{
+		this->x = x;
+		this->y = y;
+	}
+	int x;
+	int y;
+};
+
 
 class GMM
 {
@@ -27,10 +43,8 @@ public:
 
 	void InteractiveProbability(
 		__in const Image & rImage,
-		__in bool ** ppForeGround,
-		__in int numberOfForegroundSamples,
-		__in bool ** ppBackGround,
-		__in int numberOfBackGroundSamples,
+		__in const vector<Location> & rForeGround,
+		__in const vector<Location> & rBackGround,
 		__out double ** ppProbability
 		);
 
@@ -49,8 +63,7 @@ private:
 	void CreateModel(
 		__in const Image & rImage,
 		__in int numberOfGaussian,
-		__in bool ** ppTrainData,
-		__in int numberOfSamples,
+		__in const vector<Location> & rTrainData,
 		__out double ** ppProbabilityInModel
 		);
 

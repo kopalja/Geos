@@ -21,8 +21,8 @@ public:
 
 	void Process( 
 		__in const char *inputImagePath,
-		__in Location * pForeground,
-		__in Location * pBackground,
+		__in const vector<Location> & rForeGround,
+		__in const vector<Location> & rBackGround,
 		__in int sharpType,
 		__in int timeOptimalization,
 		__in int smoothness,
@@ -39,14 +39,10 @@ private:
 	int m_Smoothness;
 	bool m_RgbType;
 
+	Image * m_pGrayImage;
 
 
 
-	void GeodesicDistance(
-		__in double alfa,
-		__in const Image *pGrayImage,
-		__inout double **ppGeodesicDistance
-		);
 
 
 	void GetForegraundLocations( Image * pImage,  bool ** output, bool type )
@@ -76,7 +72,9 @@ private:
 	}
 
 	void ImageSegmentation(
-		__in const Image & rOrigin
+		__in const Image & rOrigin,
+		__in const vector<Location> & rForeGround,
+		__in const vector<Location> & rBackGround
 		);
 
 	void SetSegmentationParameters(
@@ -177,27 +175,25 @@ extern "C"  __declspec(dllexport)  void _stdcall  SegmentationProcess(
 	)
 {
 	Geos g;
-	if (foregroundSize == 0) // without help
-	{
-		g.Process( imagePath, nullptr, nullptr, segmentationType, timeOptimalization, boundSmoothness, colorRepresentation );
-	}
-	else // without help
-	{
-		Location * foreground = new Location[foregroundSize];
-		Location * background = new Location[backgroundSize];
+	vector<Location> * pForeGround = new vector<Location>();
+	vector<Location> * pBackGround = new vector<Location>();
 
+	/* user helped interactively */
+	if (foregroundSize > 1 && backgroundSize > 1) 
+	{
 		for (int i = 0; i < foregroundSize; i++)
 		{
-			foreground[i].x = foregroundX[i];
-			foreground[i].y = foregroundY[i];
+			pForeGround->push_back( Location( foregroundX[i], foregroundY[i] ) );
 		}
 		for (int i = 0; i < backgroundSize; i++)
 		{
-			background[i].x = backgroundX[i];
-			background[i].y = backgroundY[i];
+			pBackGround->push_back( Location( backgroundX[i], backgroundY[i] ) );
 		}
-		g.Process( imagePath, foreground, background, segmentationType, timeOptimalization, boundSmoothness, colorRepresentation );
 	}
+
+	g.Process( imagePath, const_cast<vector<Location>&>( *pForeGround ), const_cast<vector<Location>&>( *pBackGround ), segmentationType, timeOptimalization, boundSmoothness, colorRepresentation );
+	delete pForeGround;
+	delete pBackGround;
 
 	for (int y = 0; y < g.m_height; y++)
 	{

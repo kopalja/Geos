@@ -31,8 +31,8 @@ Geos::~Geos()
 
 void Geos::Process( 
 		__in const char *inputImagePath,
-		__in Location * pForeground,
-		__in Location * pBackground,
+		__in const vector<Location> & rForeGround,
+		__in const vector<Location> & rBackGround,
 		__in int sharpType,
 		__in int timeOptimalization,
 		__in int smoothness,
@@ -55,7 +55,7 @@ void Geos::Process(
 		if ( SUCCEEDED( hr ) )
 		{
 			SetSegmentationParameters( sharpType, timeOptimalization, smoothness, colorRepresentation );
-			ImageSegmentation( const_cast<Image&>( *pOrigin ) );
+			ImageSegmentation( const_cast<Image&>( *pOrigin ), rForeGround, rBackGround );
 			imageHandler.Save( pOrigin );
 		}
 		delete pOrigin;
@@ -65,8 +65,10 @@ void Geos::Process(
 
 
 
-void Geos::ImageSegmentation( __in const Image & rOrigin )
+void Geos::ImageSegmentation( __in const Image & rOrigin, __in const vector<Location> & rForeGround, __in const vector<Location> & rBackGround )
 {
+	m_pGrayImage = new Image( rOrigin.width, rOrigin.height, rOrigin.width * rOrigin.height, new BYTE[rOrigin.width * rOrigin.height] );
+	GrayScale( rOrigin, m_pGrayImage );
 	clock_t begin = clock();
 
 	double ** ppProbability = new double*[rOrigin.width];
@@ -82,7 +84,7 @@ void Geos::ImageSegmentation( __in const Image & rOrigin )
 	//g.AutomaticProbability( pOrigin, ppProbability );
 
 	Probability p;
-	p.GetProbabitily( m_SegmentationType, rOrigin, ppProbability );
+	p.GetProbabitily( m_SegmentationType, rOrigin, const_cast<Image &>( *m_pGrayImage ), rForeGround, rBackGround, ppProbability );
 
 
 	MinimizeEnegry( rOrigin, ppProbability, result );
@@ -127,9 +129,7 @@ void Geos::ImageSegmentation( __in const Image & rOrigin )
 
 void Geos::MinimizeEnegry( __in const Image & rOrigin, __in double ** ppProbability, __out bool ** ppLabeling )
 {
-	Image *pGrayImage = new Image( rOrigin.width, rOrigin.height, rOrigin.width * rOrigin.height, new BYTE[rOrigin.width * rOrigin.height] );
-	GrayScale( rOrigin, pGrayImage );
-	SymmetricalFilter s( 5.0, const_cast<Image &>( *pGrayImage ), const_cast<const double **>( ppProbability ) );
+	SymmetricalFilter s( 5.0, const_cast<Image &>( *m_pGrayImage ), const_cast<const double **>( ppProbability ) );
 
 	bool ** ppNewLabeling = new bool*[rOrigin.width];
 	for (int i = 0; i < rOrigin.width; i++)
@@ -152,7 +152,7 @@ void Geos::MinimizeEnegry( __in const Image & rOrigin, __in double ** ppProbabil
 
 
 		s.GetSymmetricalMask( ans, ans + 16, ppNewLabeling );
-		int newEnergy = CountEnegry( const_cast<Image &>( *pGrayImage ), ppProbability, ppNewLabeling );
+		int newEnergy = CountEnegry( const_cast<Image &>( *m_pGrayImage ), ppProbability, ppNewLabeling );
 		if ( newEnergy < energy )
 		{
 			energy = newEnergy; 
@@ -171,7 +171,7 @@ void Geos::MinimizeEnegry( __in const Image & rOrigin, __in double ** ppProbabil
 		delete ppNewLabeling[i];
 	}
 	delete ppNewLabeling;
-	delete pGrayImage;
+	delete m_pGrayImage;
 }
 
 double Geos::CountEnegry( __in const Image & rGrayImage, __in double ** ppProbability, __in bool ** ppLabeling )

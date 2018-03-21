@@ -40,7 +40,10 @@ int main( int argc, char* argv[] )
 
 	//g.Process( "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\bird3.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\bird3.jpg", "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\results\\out14.jpg", 0, 0 );
 
-	g.Process( "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\flower2.jpg",  nullptr, nullptr, 2, 1, 1, 1 );
+	//vector<Location> * pForeGround = new vector<Location>();
+	//vector<Location> * pBackGround = new vector<Location>();
+
+	//g.Process( "C:\\Users\\User\\Documents\\GitHub\\Geos\\samples\\flower2.jpg",  const_cast<vector<Location>&>( *pForeGround ), const_cast<vector<Location>&>( *pBackGround ), 2, 1, 1, 1 );
 
 
 

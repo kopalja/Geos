@@ -70,7 +70,7 @@ namespace SegmentationForm
             pictureBox.Left = 0;
             pictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
             progressBar1.Visible = false;
-            pen = Pen.Foreground;
+            pen = Pen.None;
         }
 
 
@@ -121,6 +121,10 @@ namespace SegmentationForm
         private void NewFileStrip_Click(object sender, EventArgs e)
         {
             LoadImageDialog();
+            foregroundX = new List<int>();
+            foregroundY = new List<int>();
+            backgroundX = new List<int>();
+            backgroundY = new List<int>();
         }
 
         private void SaveStrip_Click(object sender, EventArgs e)
@@ -271,10 +275,20 @@ namespace SegmentationForm
 
 
         /* Select Strip Actions */
+        private void NoneStrip_Click(object sender, EventArgs e)
+        {
+            pen = Pen.None;
+            SelectStrip.Text = "Select";
+            NoneStrip.Checked = true;
+            ForegroundStrip.Checked = false;
+            BackgroundStrip.Checked = false;
+        }
+
         private void ForegroundStrip_Click(object sender, EventArgs e)
         {
             pen = Pen.Foreground;
             SelectStrip.Text = "Select -> Foreground";
+            NoneStrip.Checked = false;
             ForegroundStrip.Checked = true;
             BackgroundStrip.Checked = false;
         }
@@ -283,6 +297,7 @@ namespace SegmentationForm
         {
             pen = Pen.Background;
             SelectStrip.Text = "Select -> Background";
+            NoneStrip.Checked = false;
             ForegroundStrip.Checked = false;
             BackgroundStrip.Checked = true;
         }
@@ -375,6 +390,9 @@ namespace SegmentationForm
             //result
             int[] labeling = new int[resultImage.Width * resultImage.Height];
 
+
+            Console.WriteLine("match 1 " + foregroundX.Count.ToString() );
+
             if (foregroundX.Count == 0 || backgroundX.Count == 0)
                 SegmentationProcess(
                     inputImagePath,
@@ -431,6 +449,10 @@ namespace SegmentationForm
             newY *= ratioHeight;
             return new Point((int)newX, (int)newY);
         }
+
+
+
+
 
     }
 

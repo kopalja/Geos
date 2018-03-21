@@ -1,4 +1,4 @@
-﻿Build started 14. 3. 2018 15:15:38.
+﻿Build started 17. 3. 2018 20:21:51.
      1>Project "C:\Users\User\Documents\GitHub\Geos\Geos\Geos\Geos.vcxproj" on node 2 (Build target(s)).
      1>Link:
          Geos.vcxproj -> C:\Users\User\Documents\GitHub\Geos\Geos\Release\Geos.dll
@@ -6,4 +6,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.13
+Time Elapsed 00:00:00.21
