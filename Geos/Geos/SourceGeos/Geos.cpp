@@ -2,11 +2,13 @@
 
 
 #include "Geos.h"
-
+#include "Energy.h"
 #include <iostream>
 #include <ctime>
 
 using namespace std;
+using namespace System::Threading;
+using namespace System;
 
 const double sqrt2 = 1.41421356237;
 
@@ -22,55 +24,44 @@ Geos::~Geos()
 {
 	for (int i = 0; i < m_width; i++)
 	{
-	 	delete m_ppResult[i];
+	 	delete[] m_ppResult[i];
 	}
-	delete m_ppResult;
+	delete[] m_ppResult;
 }
 
 
-int f(int x)
+
+
+void Geos::Process(
+	__in const char *inputImagePath,
+	__in const vector<Location> & rForeGround,
+	__in const vector<Location> & rBackGround,
+	__in int sharpType,
+	__in int timeOptimalization,
+	__in int smoothness,
+	__in int colorRepresentation
+)
 {
-	if (x == 1)
-		return 1;
-	return x * f(x - 1);
-}
+	HRESULT hr;
+	ImageHandler imageHandler(inputImagePath, "temp.jpg", &hr);
 
-
-void Geos::Process( 
-		__in const char *inputImagePath,
-		__in const vector<Location> & rForeGround,
-		__in const vector<Location> & rBackGround,
-		__in int sharpType,
-		__in int timeOptimalization,
-		__in int smoothness,
-		__in int colorRepresentation
-		)
-{
-	int x = f(3);
-
-	if (x < 2)
+	if (SUCCEEDED(hr))
 	{
-		HRESULT hr;
-		ImageHandler imageHandler(inputImagePath, "C:\\Users\\kopi\\root.jpg", &hr);
-
+		/* Aloc origin image */
+		Image *pOrigin = new Image(
+			imageHandler.InputImageWidth(),
+			imageHandler.InputImageHeight(),
+			imageHandler.InputImageWidth() * imageHandler.InputImageHeight() * imageHandler.InputImageByteDepth(),
+			new BYTE[imageHandler.InputImageWidth() * imageHandler.InputImageHeight() * imageHandler.InputImageByteDepth()]
+		);
+		hr = imageHandler.Create(pOrigin);
 		if (SUCCEEDED(hr))
 		{
-			/* Aloc origin image */
-			Image *pOrigin = new Image(
-				imageHandler.InputImageWidth(),
-				imageHandler.InputImageHeight(),
-				imageHandler.InputImageWidth() * imageHandler.InputImageHeight() * imageHandler.InputImageByteDepth(),
-				new BYTE[imageHandler.InputImageWidth() * imageHandler.InputImageHeight() * imageHandler.InputImageByteDepth()]
-			);
-			hr = imageHandler.Create(pOrigin);
-			if (SUCCEEDED(hr))
-			{
-				SetSegmentationParameters(sharpType, timeOptimalization, smoothness, colorRepresentation);
-				ImageSegmentation(const_cast<Image&>(*pOrigin), rForeGround, rBackGround);
-				imageHandler.Save(pOrigin);
-			}
-			delete pOrigin;
+			SetSegmentationParameters(sharpType, timeOptimalization, smoothness, colorRepresentation);
+			ImageSegmentation(const_cast<Image&>(*pOrigin), rForeGround, rBackGround);
+			imageHandler.Save(pOrigin);
 		}
+		delete pOrigin;
 	}
 }
 
@@ -79,9 +70,9 @@ void Geos::Process(
 
 void Geos::ImageSegmentation( __in const Image & rOrigin, __in const vector<Location> & rForeGround, __in const vector<Location> & rBackGround )
 {
+	clock_t start = clock();
 	m_pGrayImage = new Image( rOrigin.width, rOrigin.height, rOrigin.width * rOrigin.height, new BYTE[rOrigin.width * rOrigin.height] );
 	GrayScale( rOrigin, m_pGrayImage );
-	clock_t begin = clock();
 
 	double ** ppProbability = new double*[rOrigin.width];
 	bool ** result = new bool*[rOrigin.width];
@@ -91,24 +82,18 @@ void Geos::ImageSegmentation( __in const Image & rOrigin, __in const vector<Loca
 		result[i] = new bool[rOrigin.height];
 	}
 
-	//SetPixelProbability( pInteractiveImage, pGrayImage, const_cast<Image&>( pOrigin ), ppProbability );
-	//GMM g;
-	//g.AutomaticProbability( pOrigin, ppProbability );
-
 	Probability p;
-	p.GetProbabitily( m_SegmentationType, rOrigin, const_cast<Image &>( *m_pGrayImage ), rForeGround, rBackGround, ppProbability );
-
+	p.GetProbabitily( m_SegmentationType, m_RgbType, rOrigin, const_cast<Image &>( *m_pGrayImage ), rForeGround, rBackGround, ppProbability );
+	cout << "probabilities " << clock() - start << endl;
 
 	MinimizeEnegry( rOrigin, ppProbability, result );
 
-
-	//Image *pGrayImage = new Image( rOrigin.width, rOrigin.height, rOrigin.width * rOrigin.height, new BYTE[rOrigin.width * rOrigin.height] );
-	//GrayScale( rOrigin, pGrayImage );
-	//SymmetricalFilter s( 0.2, const_cast<Image &>( *pGrayImage ), const_cast<const double **>( ppProbability ) );
-
+	cout << "minimalization " << clock() - start << endl;
 
 	m_width = rOrigin.width;
 	m_height = rOrigin.height;
+
+
 	m_ppResult = new bool*[m_width];
 	for (int i = 0; i < m_width; i++)
 		m_ppResult[i] = new bool[m_height];
@@ -128,11 +113,18 @@ void Geos::ImageSegmentation( __in const Image & rOrigin, __in const vector<Loca
 	{
 		for (int x = 0; x < rOrigin.width; x++)
 		{
-			rOrigin.buffer[i] = ppProbability[x][y] * 255.0;
-			rOrigin.buffer[i + 1] = ppProbability[x][y] * 255.0;
-			rOrigin.buffer[i + 2] = ppProbability[x][y] * 255.0;
-
-
+			if (m_ppResult[x][y])
+			{
+				rOrigin.buffer[i] = 255.0;
+				rOrigin.buffer[i + 1] = 255.0;
+				rOrigin.buffer[i + 2] = 255.0;
+			}
+			else
+			{
+				rOrigin.buffer[i] = 0.0;
+				rOrigin.buffer[i + 1] = 0.0;
+				rOrigin.buffer[i + 2] = 0.0;
+			}
 			i += 3;
 			j ++;
 		}
@@ -141,48 +133,46 @@ void Geos::ImageSegmentation( __in const Image & rOrigin, __in const vector<Loca
 
 void Geos::MinimizeEnegry( __in const Image & rOrigin, __in double ** ppProbability, __out bool ** ppLabeling )
 {
-	SymmetricalFilter s( 5.0, const_cast<Image &>( *m_pGrayImage ), const_cast<const double **>( ppProbability ) );
-
-	bool ** ppNewLabeling = new bool*[rOrigin.width];
-	for (int i = 0; i < rOrigin.width; i++)
-	{
-		ppNewLabeling[i] = new bool[rOrigin.height];
-	}
-
-	int energy = MAXINT32;
-	int segmentationIndex;
+	SymmetricalFilter^ symmetricalFilter = gcnew SymmetricalFilter(0.4, const_cast<Image &>(*m_pGrayImage), const_cast<const double **>(ppProbability));
 	int numberOfEnergies = ( 3 - m_TimeOptimalization ) * 2; // 2, 4, 6
-	int smoothness = ( m_Smoothness ) * 40; // 20, 40, 60
-
 	int tetaDiameter = sqrt( rOrigin.width * rOrigin.height ) / 100 * ( ( m_Smoothness * 5 ) + 1 );
 
-	for (int i = 1; i <= numberOfEnergies; i++)
-	{
-		double ans = tetaDiameter + tetaDiameter / ( i + 1 );
-		if ( i % 2 == 1 )
-			ans = tetaDiameter - tetaDiameter / ( i + 1 );
+
+	cli::array<Energy^>^ energy = gcnew cli::array<Energy^>(numberOfEnergies);
+	cli::array<Thread^>^ thread = gcnew cli::array<Thread^>(numberOfEnergies);
 
 
-		s.GetSymmetricalMask( ans, ans + 16, ppNewLabeling );
-		int newEnergy = CountEnegry( const_cast<Image &>( *m_pGrayImage ), ppProbability, ppNewLabeling );
-		if ( newEnergy < energy )
-		{
-			energy = newEnergy; 
-			segmentationIndex = i;
-			for (int y = 0; y < rOrigin.height; y++)
-			{
-				for (int x = 0; x < rOrigin.width; x++)
-				{
-					ppLabeling[x][y] = ppNewLabeling[x][y];
-				}
-			}
-		}
-	}
-	for (int i = 0; i < rOrigin.width; i++)
+	/* Create threads */
+	for (size_t i = 0; i < numberOfEnergies; i++)
 	{
-		delete ppNewLabeling[i];
+		energy[i] = gcnew Energy(i * 5, symmetricalFilter, ppProbability, const_cast<Image &>(*m_pGrayImage));
+		thread[i] = gcnew Thread(gcnew ThreadStart(energy[i], &Energy::EntryPoint));
+		thread[i]->Start();
 	}
-	delete ppNewLabeling;
+
+	/* Wait for all threads */
+	for (size_t i = 0; i < numberOfEnergies; i++)
+	{
+		thread[i]->Join();
+	}
+
+	/* Set labeling with min energy */
+	int minEnergy = MAXINT32;
+	for (size_t i = 0; i < numberOfEnergies; i++)
+	{
+		cout << "enery " << energy[i]->value << endl;
+		if (energy[i]->value < minEnergy)
+			minEnergy = energy[i]->value;
+	}
+	for (size_t i = 0; i < numberOfEnergies; i++)
+	{
+		if (energy[i]->value == minEnergy)
+			CopyLabeling(rOrigin.width, rOrigin.height, energy[i]->ppLabeling, ppLabeling);
+		delete energy[i];
+	}
+
+
+
 	delete m_pGrayImage;
 }
 
@@ -296,11 +286,11 @@ void Geos::SetPixelProbability( __in const Image & pInteractiveImage, __in const
 
 	for (int i = 0; i < pInteractiveImage.width; i++)
 	{
-		delete ppLocations[i];
-		delete ppBgProbability[i];
+		delete[] ppLocations[i];
+		delete[] ppBgProbability[i];
 	}
-	delete ppLocations;
-	delete ppBgProbability;
+	delete[] ppLocations;
+	delete[] ppBgProbability;
 }
 
 void Geos::SetLocations( __in const Image & pInteractiveImage, __in std::function<bool ( BYTE, BYTE, BYTE )> condition, __out bool ** ppLocations )
@@ -335,7 +325,7 @@ void Geos::SetAreaProbability( __in const Image * pGrayImage, __in const Image &
 	}
 
 
-	GMM gmm;
+	GMM gmm(true);
 	/* Color base probability */
 	//gmm.InteractiveProbability( pOrigin, ppLocations, ppProbability );
 

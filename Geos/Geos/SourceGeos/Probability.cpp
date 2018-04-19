@@ -1,8 +1,18 @@
 #include "Probability.h"
 #include <ctime>
 
-void Probability::GetProbabitily( __in SegmentationType segmentationType, __in const Image & rOrigin, __in const Image & rGrayImage, __in const vector<Location> & rForeground, __in const vector<Location> & rBackground, __out double ** ppProbability )
+void Probability::GetProbabitily( 
+	__in SegmentationType segmentationType,
+	__in bool rgbType, 
+	__in const Image & rOrigin, 
+	__in const Image & rGrayImage,
+	__in const vector<Location> & rForeground,
+	__in const vector<Location> & rBackground,
+	__out double ** ppProbability
+)
 {
+	m_RgbType = rgbType;
+
 	switch ( segmentationType )
 	{
 	case Sharpness:
@@ -17,7 +27,7 @@ void Probability::GetProbabitily( __in SegmentationType segmentationType, __in c
 		}
 	case Color:
 		{
-			GMM g;
+			GMM g( m_RgbType );
 			g.AutomaticProbability( rOrigin, ppProbability );
 			break;
 		}
@@ -63,14 +73,11 @@ void Probability::InteractiveProbability( __in const Image & rOrigin, __in const
 	}
 
 	SymmetricalFilter s( 2.0, rGrayImage );
-	s.CountUnSignedDistance( ppForeGroundDistance );
-	s.CountUnSignedDistance( ppForeGroundDistance );
-	s.CountUnSignedDistance( ppForeGroundDistance );
-
-	s.CountUnSignedDistance( ppBackGroundDistance );
-	s.CountUnSignedDistance( ppBackGroundDistance );
-	s.CountUnSignedDistance( ppBackGroundDistance );
-
+	for (int i = 0; i < 3; i++)
+	{
+		s.CountUnSignedDistance(ppForeGroundDistance, true);
+		s.CountUnSignedDistance(ppBackGroundDistance, true);
+	}
 
 	double ** ppGmmProbability = new double*[rOrigin.width];
 	for (int i = 0; i < rOrigin.width; i++)
@@ -78,7 +85,7 @@ void Probability::InteractiveProbability( __in const Image & rOrigin, __in const
 		ppGmmProbability[i] = new double[rOrigin.height];
 	}
 
-	GMM g;
+	GMM g( m_RgbType );
 	g.InteractiveProbability( rOrigin, rForeGround, rBackGround, ppGmmProbability );
 
 
@@ -107,9 +114,6 @@ void Probability::InteractiveProbability( __in const Image & rOrigin, __in const
 
 void Probability::SharpnessProbability( __in const Image & rOrigin, __out double ** ppProbability, __in bool UseModifySharpness2 )
 {
-	clock_t time = clock();
-	cout << clock() - time << endl;
-	time = clock();
 	int xDivisible = rOrigin.width, yDivisible = rOrigin.height;
 
 	if (rOrigin.width % 8 != 0)
@@ -123,8 +127,6 @@ void Probability::SharpnessProbability( __in const Image & rOrigin, __out double
 	s3.GrayScale( rOrigin, pGrayImage );
 	s3.GrayToResult( ResultType::S3Image, 2, false, const_cast<Image &>( *pGrayImage ), pS3Image );
 
-	cout << "s3 " << clock() - time << endl;
-	time = clock();
 
 	for (int i = 1; i < pS3Image->height; i++)
 	{
@@ -140,13 +142,9 @@ void Probability::SharpnessProbability( __in const Image & rOrigin, __out double
 		}
 	}
 	ModifySharpness1( const_cast<Image &>( *pS3Image ), rOrigin, ppProbability );
-	cout << "m1 " << clock() - time << endl;
-	time = clock();
 	if ( UseModifySharpness2 )
 	{
 		ModifySharpness2( const_cast<Image &>( *pS3Image ), rOrigin, ppProbability );
-		cout << "m2 " << clock() - time << endl;
-		time = clock();
 	}
 	delete pGrayImage;
 	delete pS3Image;
@@ -204,7 +202,7 @@ void Probability::ModifySharpness2( __in const Image & rS3Image, __in const Imag
 	SetSamples( rOrigin.width, rOrigin.height, ppProbability, pForeGround, pBackGround );
 
 
-	GMM g;
+	GMM g( m_RgbType );
 	
 	g.InteractiveProbability( rOrigin, const_cast<vector<Location>&>( *pForeGround ), const_cast<vector<Location>&>( *pBackGround ), ppGmmProbability );
 
@@ -216,8 +214,8 @@ void Probability::ModifySharpness2( __in const Image & rS3Image, __in const Imag
 	{
 		for (int x = 0; x < rOrigin.width; x++)
 		{
-			double temp = s.m_ppSignedDistance[x][y] + 200;
-			temp = ( 400 - temp ) / 400.0;
+			double temp = s.m_ppSignedDistance[x][y] + 200.0;
+			temp = ( 400.0 - temp ) / 400.0;
 
 			ppProbability[x][y] = ( ppProbability[x][y] + ppGmmProbability[x][y] + temp ) / 3;
 		}

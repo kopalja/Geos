@@ -10,9 +10,12 @@
 #include <ctime>
 #include <iostream>
 
+using namespace System;
+
 
 using namespace std;
 
+using namespace System::Threading;
 
 
 
@@ -155,8 +158,8 @@ void S3::GrayToResult( __in ResultType resultType, __in int fourierReduction, __
 	/* Create S1Image from GrayScale */
 	if ( resultType == ResultType::S1Image )
 	{
-		S1 s1Algorithm;
-		s1Algorithm.CreateS1( fourierReduction, skin,  pGrayImage, pResultImage );
+		//S1 s1Algorithm;
+		//s1Algorithm.CreateS1( fourierReduction, skin,  pGrayImage, pResultImage );
 		//duration = ( std::clock() - start ); cout << "S1 : " << duration << endl; start = std::clock();
 		_ASSERTE( _CrtCheckMemory() );
 	}
@@ -175,13 +178,21 @@ void S3::GrayToResult( __in ResultType resultType, __in int fourierReduction, __
 	{
 		Image *pTempImage = new Image( pResultImage->width, pResultImage->height, pResultImage->size, new BYTE[pResultImage->size] );
 
-		S1 s1Algorithm;
-		s1Algorithm.CreateS1( fourierReduction, skin, pGrayImage, pResultImage );
+
+		/* multithread version */
+		S1^ s1 = gcnew S1( fourierReduction, skin, pGrayImage, pResultImage );
+		Thread^ t = gcnew Thread(gcnew ThreadStart(s1, &S1::EntryPoint));
+		t->Start();
+
+		//S1 s1Algorithm(pGrayImage);
+		//s1Algorithm.CreateS1( fourierReduction, skin, pGrayImage, pResultImage );
 		//duration = ( std::clock() - start ); cout << "S1 : " << duration << endl; start = std::clock();
 
 		S2 s2Algorithm;
-		s2Algorithm.CreateS2( pGrayImage, pTempImage );
+		s2Algorithm.CreateS2(pGrayImage, pTempImage);
 		//duration = ( std::clock() - start ); cout << "S2 : " << duration << endl; start = std::clock();
+
+		t->Join();
 
 		Merge( pTempImage, pResultImage );
 		//duration = ( std::clock() - start ); cout << "Merge : " << duration << endl; start = std::clock();

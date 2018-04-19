@@ -66,10 +66,10 @@
             this.tableLayoutPanel1.Controls.Add(this.ColorBox, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.TetaLabel, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.TimeBox, 1, 1);
-            this.tableLayoutPanel1.Controls.Add(this.SegmentationBox, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.TimeLabel, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.SegmentationLabel, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.TetaBox, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.SegmentationBox, 0, 1);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 12);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 4;
@@ -106,10 +106,10 @@
             this.ColorBox.Items.AddRange(new object[] {
             "RGB",
             "LAB"});
-            this.ColorBox.Location = new System.Drawing.Point(436, 310);
+            this.ColorBox.Location = new System.Drawing.Point(50, 310);
             this.ColorBox.Margin = new System.Windows.Forms.Padding(50, 10, 50, 10);
             this.ColorBox.Name = "ColorBox";
-            this.ColorBox.Size = new System.Drawing.Size(287, 67);
+            this.ColorBox.Size = new System.Drawing.Size(286, 67);
             this.ColorBox.TabIndex = 9;
             this.ColorBox.SelectedIndexChanged += new System.EventHandler(this.ColorBox_SelectedIndexChanged);
             // 
@@ -193,10 +193,10 @@
             "Crooked",
             "Normal",
             "Smooth"});
-            this.TetaBox.Location = new System.Drawing.Point(50, 310);
+            this.TetaBox.Location = new System.Drawing.Point(436, 310);
             this.TetaBox.Margin = new System.Windows.Forms.Padding(50, 10, 50, 10);
             this.TetaBox.Name = "TetaBox";
-            this.TetaBox.Size = new System.Drawing.Size(286, 67);
+            this.TetaBox.Size = new System.Drawing.Size(287, 67);
             this.TetaBox.TabIndex = 8;
             this.TetaBox.SelectedIndexChanged += new System.EventHandler(this.TetaBox_SelectedIndexChanged);
             // 

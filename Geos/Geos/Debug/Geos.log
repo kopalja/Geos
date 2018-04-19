@@ -1,9 +1,9 @@
-﻿  Geos.cpp
-c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\geos.cpp(131): warning C4244: '=': conversion from 'double' to 'BYTE', possible loss of data
-c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\geos.cpp(132): warning C4244: '=': conversion from 'double' to 'BYTE', possible loss of data
-c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\geos.cpp(133): warning C4244: '=': conversion from 'double' to 'BYTE', possible loss of data
-c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\geos.cpp(157): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\geos.cpp(167): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+﻿  Probability.cpp
+c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\probability.cpp(66): warning C4018: '<': signed/unsigned mismatch
+c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\probability.cpp(70): warning C4018: '<': signed/unsigned mismatch
+c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\probability.cpp(278): warning C4244: '=': conversion from 'unsigned long' to 'BYTE', possible loss of data
+c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\probability.cpp(279): warning C4244: '=': conversion from 'unsigned long' to 'BYTE', possible loss of data
+c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\probability.cpp(280): warning C4244: '=': conversion from 'unsigned long' to 'BYTE', possible loss of data
   AssemblyInfo.obj : /DEBUG:FASTLINK is not supported when managed code is present; restarting link with /DEBUG:FULL
      Creating library C:\Users\kopi\Documents\Github\Geos\Geos\Debug\Geos.lib and object C:\Users\kopi\Documents\Github\Geos\Geos\Debug\Geos.exp
   Geos.vcxproj -> C:\Users\kopi\Documents\Github\Geos\Geos\Debug\Geos.dll

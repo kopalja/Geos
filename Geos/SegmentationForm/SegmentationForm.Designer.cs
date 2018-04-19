@@ -39,12 +39,12 @@
             this.ParamsStrip = new System.Windows.Forms.ToolStripMenuItem();
             this.TypeStrip = new System.Windows.Forms.ToolStripMenuItem();
             this.SharpStrip = new System.Windows.Forms.ToolStripMenuItem();
+            this.SharpAndColorStrip = new System.Windows.Forms.ToolStripMenuItem();
             this.ColorStrip = new System.Windows.Forms.ToolStripMenuItem();
             this.BackgroundColorStrip = new System.Windows.Forms.ToolStripMenuItem();
             this.BlackStrip = new System.Windows.Forms.ToolStripMenuItem();
             this.WhiteStrip = new System.Windows.Forms.ToolStripMenuItem();
             this.GreenStrip = new System.Windows.Forms.ToolStripMenuItem();
-            this.TransparentStrip = new System.Windows.Forms.ToolStripMenuItem();
             this.EditStrip = new System.Windows.Forms.ToolStripMenuItem();
             this.SelectStrip = new System.Windows.Forms.ToolStripMenuItem();
             this.NoneStrip = new System.Windows.Forms.ToolStripMenuItem();
@@ -59,16 +59,17 @@
             // 
             // pictureBox
             // 
-            this.pictureBox.Location = new System.Drawing.Point(0, 35);
+            this.pictureBox.Location = new System.Drawing.Point(28, 49);
             this.pictureBox.Margin = new System.Windows.Forms.Padding(0);
             this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(921, 791);
+            this.pictureBox.Size = new System.Drawing.Size(819, 633);
             this.pictureBox.TabIndex = 0;
             this.pictureBox.TabStop = false;
             this.pictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.OriginPictureBox_MouseMove);
             // 
             // menuStrip1
             // 
+            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.ParamsStrip,
@@ -77,8 +78,7 @@
             this.SwitchStrip});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(1102, 33);
+            this.menuStrip1.Size = new System.Drawing.Size(980, 28);
             this.menuStrip1.TabIndex = 2;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -90,7 +90,7 @@
             this.SaveAsStrip,
             this.QuitStrip});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(50, 29);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(44, 24);
             this.fileToolStripMenuItem.Text = "File";
             // 
             // NewFileStrip
@@ -98,26 +98,28 @@
             this.NewFileStrip.Image = ((System.Drawing.Image)(resources.GetObject("NewFileStrip.Image")));
             this.NewFileStrip.Name = "NewFileStrip";
             this.NewFileStrip.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.NewFileStrip.Size = new System.Drawing.Size(252, 30);
+            this.NewFileStrip.Size = new System.Drawing.Size(223, 26);
             this.NewFileStrip.Text = "New File";
             this.NewFileStrip.Click += new System.EventHandler(this.NewFileStrip_Click);
             // 
             // SaveStrip
             // 
+            this.SaveStrip.Enabled = false;
             this.SaveStrip.Image = ((System.Drawing.Image)(resources.GetObject("SaveStrip.Image")));
             this.SaveStrip.Name = "SaveStrip";
             this.SaveStrip.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.SaveStrip.Size = new System.Drawing.Size(252, 30);
+            this.SaveStrip.Size = new System.Drawing.Size(223, 26);
             this.SaveStrip.Text = "Save";
             this.SaveStrip.Click += new System.EventHandler(this.SaveStrip_Click);
             // 
             // SaveAsStrip
             // 
+            this.SaveAsStrip.Enabled = false;
             this.SaveAsStrip.Image = ((System.Drawing.Image)(resources.GetObject("SaveAsStrip.Image")));
             this.SaveAsStrip.Name = "SaveAsStrip";
             this.SaveAsStrip.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.S)));
-            this.SaveAsStrip.Size = new System.Drawing.Size(252, 30);
+            this.SaveAsStrip.Size = new System.Drawing.Size(223, 26);
             this.SaveAsStrip.Text = "Save as";
             this.SaveAsStrip.Click += new System.EventHandler(this.SaveAsStrip_Click);
             // 
@@ -125,7 +127,7 @@
             // 
             this.QuitStrip.Name = "QuitStrip";
             this.QuitStrip.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Q)));
-            this.QuitStrip.Size = new System.Drawing.Size(252, 30);
+            this.QuitStrip.Size = new System.Drawing.Size(223, 26);
             this.QuitStrip.Text = "Quit";
             this.QuitStrip.Click += new System.EventHandler(this.QuitStrip_Click);
             // 
@@ -135,17 +137,19 @@
             this.TypeStrip,
             this.BackgroundColorStrip,
             this.EditStrip});
+            this.ParamsStrip.Enabled = false;
             this.ParamsStrip.Name = "ParamsStrip";
-            this.ParamsStrip.Size = new System.Drawing.Size(111, 29);
+            this.ParamsStrip.Size = new System.Drawing.Size(94, 24);
             this.ParamsStrip.Text = "Parameters";
             // 
             // TypeStrip
             // 
             this.TypeStrip.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.SharpStrip,
+            this.SharpAndColorStrip,
             this.ColorStrip});
             this.TypeStrip.Name = "TypeStrip";
-            this.TypeStrip.Size = new System.Drawing.Size(249, 30);
+            this.TypeStrip.Size = new System.Drawing.Size(223, 26);
             this.TypeStrip.Text = "Type -> Sharp";
             // 
             // SharpStrip
@@ -153,14 +157,21 @@
             this.SharpStrip.Checked = true;
             this.SharpStrip.CheckState = System.Windows.Forms.CheckState.Checked;
             this.SharpStrip.Name = "SharpStrip";
-            this.SharpStrip.Size = new System.Drawing.Size(130, 30);
+            this.SharpStrip.Size = new System.Drawing.Size(216, 26);
             this.SharpStrip.Text = "Sharp";
             this.SharpStrip.Click += new System.EventHandler(this.SharpStrip_Click);
+            // 
+            // SharpAndColorStrip
+            // 
+            this.SharpAndColorStrip.Name = "SharpAndColorStrip";
+            this.SharpAndColorStrip.Size = new System.Drawing.Size(216, 26);
+            this.SharpAndColorStrip.Text = "SharpAndColor";
+            this.SharpAndColorStrip.Click += new System.EventHandler(this.SharpAndColorStrip_Click);
             // 
             // ColorStrip
             // 
             this.ColorStrip.Name = "ColorStrip";
-            this.ColorStrip.Size = new System.Drawing.Size(130, 30);
+            this.ColorStrip.Size = new System.Drawing.Size(216, 26);
             this.ColorStrip.Text = "Color";
             this.ColorStrip.Click += new System.EventHandler(this.ColorStrip_Click);
             // 
@@ -169,10 +180,9 @@
             this.BackgroundColorStrip.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.BlackStrip,
             this.WhiteStrip,
-            this.GreenStrip,
-            this.TransparentStrip});
+            this.GreenStrip});
             this.BackgroundColorStrip.Name = "BackgroundColorStrip";
-            this.BackgroundColorStrip.Size = new System.Drawing.Size(249, 30);
+            this.BackgroundColorStrip.Size = new System.Drawing.Size(223, 26);
             this.BackgroundColorStrip.Text = "BackGround -> Black";
             // 
             // BlackStrip
@@ -180,37 +190,30 @@
             this.BlackStrip.Checked = true;
             this.BlackStrip.CheckState = System.Windows.Forms.CheckState.Checked;
             this.BlackStrip.Name = "BlackStrip";
-            this.BlackStrip.Size = new System.Drawing.Size(175, 30);
+            this.BlackStrip.Size = new System.Drawing.Size(216, 26);
             this.BlackStrip.Text = "Black";
             this.BlackStrip.Click += new System.EventHandler(this.BlackStrip_Click);
             // 
             // WhiteStrip
             // 
             this.WhiteStrip.Name = "WhiteStrip";
-            this.WhiteStrip.Size = new System.Drawing.Size(175, 30);
+            this.WhiteStrip.Size = new System.Drawing.Size(216, 26);
             this.WhiteStrip.Text = "White";
             this.WhiteStrip.Click += new System.EventHandler(this.WhiteStrip_Click);
             // 
             // GreenStrip
             // 
             this.GreenStrip.Name = "GreenStrip";
-            this.GreenStrip.Size = new System.Drawing.Size(175, 30);
+            this.GreenStrip.Size = new System.Drawing.Size(216, 26);
             this.GreenStrip.Text = "Green";
             this.GreenStrip.Click += new System.EventHandler(this.GreenStrip_Click);
-            // 
-            // TransparentStrip
-            // 
-            this.TransparentStrip.Name = "TransparentStrip";
-            this.TransparentStrip.Size = new System.Drawing.Size(175, 30);
-            this.TransparentStrip.Text = "Transparent";
-            this.TransparentStrip.Click += new System.EventHandler(this.TransparentStrip_Click);
             // 
             // EditStrip
             // 
             this.EditStrip.Image = ((System.Drawing.Image)(resources.GetObject("EditStrip.Image")));
             this.EditStrip.Name = "EditStrip";
             this.EditStrip.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
-            this.EditStrip.Size = new System.Drawing.Size(249, 30);
+            this.EditStrip.Size = new System.Drawing.Size(223, 26);
             this.EditStrip.Text = "Edit...";
             this.EditStrip.Click += new System.EventHandler(this.EditStrip_Click);
             // 
@@ -220,8 +223,9 @@
             this.NoneStrip,
             this.ForegroundStrip,
             this.BackgroundStrip});
+            this.SelectStrip.Enabled = false;
             this.SelectStrip.Name = "SelectStrip";
-            this.SelectStrip.Size = new System.Drawing.Size(70, 29);
+            this.SelectStrip.Size = new System.Drawing.Size(61, 24);
             this.SelectStrip.Text = "Select";
             // 
             // NoneStrip
@@ -229,30 +233,31 @@
             this.NoneStrip.Checked = true;
             this.NoneStrip.CheckState = System.Windows.Forms.CheckState.Checked;
             this.NoneStrip.Name = "NoneStrip";
-            this.NoneStrip.Size = new System.Drawing.Size(179, 30);
+            this.NoneStrip.Size = new System.Drawing.Size(163, 26);
             this.NoneStrip.Text = "None";
             this.NoneStrip.Click += new System.EventHandler(this.NoneStrip_Click);
             // 
             // ForegroundStrip
             // 
             this.ForegroundStrip.Name = "ForegroundStrip";
-            this.ForegroundStrip.Size = new System.Drawing.Size(179, 30);
+            this.ForegroundStrip.Size = new System.Drawing.Size(163, 26);
             this.ForegroundStrip.Text = "Foreground";
             this.ForegroundStrip.Click += new System.EventHandler(this.ForegroundStrip_Click);
             // 
             // BackgroundStrip
             // 
             this.BackgroundStrip.Name = "BackgroundStrip";
-            this.BackgroundStrip.Size = new System.Drawing.Size(179, 30);
+            this.BackgroundStrip.Size = new System.Drawing.Size(163, 26);
             this.BackgroundStrip.Text = "Background";
             this.BackgroundStrip.Click += new System.EventHandler(this.BackgroundStrip_Click);
             // 
             // StartStrip
             // 
-            this.StartStrip.Image = ((System.Drawing.Image)(resources.GetObject("StartStrip.Image")));
+            this.StartStrip.Enabled = false;
+            this.StartStrip.Image = global::SegmentationForm.Properties.Resources.startIcon;
             this.StartStrip.Name = "StartStrip";
             this.StartStrip.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.StartStrip.Size = new System.Drawing.Size(110, 29);
+            this.StartStrip.Size = new System.Drawing.Size(99, 24);
             this.StartStrip.Text = "Start   F5";
             this.StartStrip.Click += new System.EventHandler(this.StartStrip_Click);
             // 
@@ -260,32 +265,33 @@
             // 
             this.SwitchStrip.Name = "SwitchStrip";
             this.SwitchStrip.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Tab)));
-            this.SwitchStrip.Size = new System.Drawing.Size(151, 29);
+            this.SwitchStrip.Size = new System.Drawing.Size(128, 24);
             this.SwitchStrip.Text = "Switch  Ctrl+Tab";
+            this.SwitchStrip.Visible = false;
             this.SwitchStrip.Click += new System.EventHandler(this.SwitchStrip_Click);
             // 
             // progressBar1
             // 
             this.progressBar1.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.progressBar1.Location = new System.Drawing.Point(-28, 220);
-            this.progressBar1.Margin = new System.Windows.Forms.Padding(34, 38, 34, 38);
+            this.progressBar1.Location = new System.Drawing.Point(-25, 176);
+            this.progressBar1.Margin = new System.Windows.Forms.Padding(30);
             this.progressBar1.MarqueeAnimationSpeed = 50;
             this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(444, 118);
+            this.progressBar1.Size = new System.Drawing.Size(395, 94);
             this.progressBar1.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
             this.progressBar1.TabIndex = 4;
             // 
             // SegmentationForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
-            this.ClientSize = new System.Drawing.Size(1102, 1010);
+            this.ClientSize = new System.Drawing.Size(980, 808);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.pictureBox);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
-            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.MaximizeBox = false;
             this.Name = "SegmentationForm";
             this.Text = "SegmentationForm";
             this.Load += new System.EventHandler(this.SegmentationForm_Load);
@@ -315,7 +321,6 @@
         private System.Windows.Forms.ToolStripMenuItem BlackStrip;
         private System.Windows.Forms.ToolStripMenuItem WhiteStrip;
         private System.Windows.Forms.ToolStripMenuItem GreenStrip;
-        private System.Windows.Forms.ToolStripMenuItem TransparentStrip;
         private System.Windows.Forms.ToolStripMenuItem SelectStrip;
         private System.Windows.Forms.ToolStripMenuItem ForegroundStrip;
         private System.Windows.Forms.ToolStripMenuItem BackgroundStrip;
@@ -323,5 +328,6 @@
         private System.Windows.Forms.ToolStripMenuItem EditStrip;
         private System.Windows.Forms.ToolStripMenuItem SwitchStrip;
         private System.Windows.Forms.ToolStripMenuItem NoneStrip;
+        private System.Windows.Forms.ToolStripMenuItem SharpAndColorStrip;
     }
 }

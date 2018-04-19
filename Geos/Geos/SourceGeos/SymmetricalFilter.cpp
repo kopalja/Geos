@@ -96,7 +96,7 @@ void SymmetricalFilter::GetSymmetricalMask( __in double erosion, __in double dil
 
 void SymmetricalFilter::CountSignedDistance( __in const double **ppInputProbability )
 {
-	//m_Alfa += 22.0;
+	//m_Alfa += 11.0;
 	/* Aloc distance to complement */
 	double **ppDistanceToObject = new double*[m_Width];
 	double **ppDistanceToComplement = new double*[m_Width];
@@ -107,16 +107,16 @@ void SymmetricalFilter::CountSignedDistance( __in const double **ppInputProbabil
 	}
 
 	InitDistance( false, ppInputProbability, ppDistanceToObject );
-	CountUnSignedDistance( ppDistanceToObject );
-	CountUnSignedDistance( ppDistanceToObject );
-	CountUnSignedDistance( ppDistanceToObject );
-	CountUnSignedDistance( ppDistanceToObject );
+	CountUnSignedDistance( ppDistanceToObject, true);
+	CountUnSignedDistance( ppDistanceToObject, true);
+	CountUnSignedDistance( ppDistanceToObject, true);
+	CountUnSignedDistance( ppDistanceToObject, true);
 
 	InitDistance( true, ppInputProbability, ppDistanceToComplement );
-	CountUnSignedDistance( ppDistanceToComplement );
-	CountUnSignedDistance( ppDistanceToComplement );
-	CountUnSignedDistance( ppDistanceToComplement );
-	CountUnSignedDistance( ppDistanceToComplement );
+	CountUnSignedDistance( ppDistanceToComplement, true);
+	CountUnSignedDistance( ppDistanceToComplement, true);
+	CountUnSignedDistance( ppDistanceToComplement, true);
+	CountUnSignedDistance( ppDistanceToComplement, true);
 
 	/* Count signed distance */
 	for (int y = 0; y < m_Height; y++)
@@ -131,7 +131,7 @@ void SymmetricalFilter::CountSignedDistance( __in const double **ppInputProbabil
 		delete[] ppDistanceToComplement[i];
 	}
 	delete[] ppDistanceToComplement;
-	//m_Alfa -= 22.0;
+	//m_Alfa -= 11.0;
 }
 
 
@@ -236,7 +236,7 @@ void SymmetricalFilter::CountErosion( __in double erosion, __out double **ppEros
 		}
 
 	for (int i = 0; i < 8; i++)
-		CountUnSignedDistance( ppErosionDistance );
+		CountUnSignedDistance( ppErosionDistance, true);
 }
 
 void SymmetricalFilter::CountDilation( __in double dilation, __out double **ppDilationDistance )
@@ -251,6 +251,6 @@ void SymmetricalFilter::CountDilation( __in double dilation, __out double **ppDi
 		}
 
 	for (int i = 0; i < 8; i++)
-		CountUnSignedDistance( ppDilationDistance );
+		CountUnSignedDistance( ppDilationDistance, true);
 
 }

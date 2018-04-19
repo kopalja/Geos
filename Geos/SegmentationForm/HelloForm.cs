@@ -24,7 +24,7 @@ namespace SegmentationForm
             InitializeComponent();
 
             InviteLabel.Font = new Font(FontFamily.GenericSansSerif, 14);
-            InviteLabel.Text = "Hello";
+            InviteLabel.Text = "Choose image to segment";
 
 
             InviteLabel.Location = new Point(this.Width / 2 - InviteLabel.Width / 2, 100);

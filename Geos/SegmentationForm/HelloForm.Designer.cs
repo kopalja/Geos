@@ -35,7 +35,7 @@
             // InviteLabel
             // 
             this.InviteLabel.AutoSize = true;
-            this.InviteLabel.Location = new System.Drawing.Point(261, 141);
+            this.InviteLabel.Location = new System.Drawing.Point(241, 59);
             this.InviteLabel.Name = "InviteLabel";
             this.InviteLabel.Size = new System.Drawing.Size(46, 17);
             this.InviteLabel.TabIndex = 0;
@@ -43,17 +43,17 @@
             // 
             // StartButton
             // 
-            this.StartButton.Location = new System.Drawing.Point(232, 254);
+            this.StartButton.Location = new System.Drawing.Point(274, 124);
             this.StartButton.Name = "StartButton";
             this.StartButton.Size = new System.Drawing.Size(75, 23);
             this.StartButton.TabIndex = 1;
-            this.StartButton.Text = "button1";
+            this.StartButton.Text = "Start";
             this.StartButton.UseVisualStyleBackColor = true;
             this.StartButton.Click += new System.EventHandler(this.StartButton_Click);
             // 
             // HelloForm
             // 
-            this.ClientSize = new System.Drawing.Size(789, 616);
+            this.ClientSize = new System.Drawing.Size(571, 255);
             this.Controls.Add(this.StartButton);
             this.Controls.Add(this.InviteLabel);
             this.Name = "HelloForm";
@@ -65,7 +65,6 @@
 
         #endregion
 
-        private System.IO.FileSystemWatcher fileSystemWatcher1;
         private System.Windows.Forms.Label InviteLabel;
         private System.Windows.Forms.Button StartButton;
     }

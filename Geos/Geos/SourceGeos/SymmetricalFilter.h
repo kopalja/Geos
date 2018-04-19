@@ -5,7 +5,7 @@
 
 
 
-class SymmetricalFilter
+ref class SymmetricalFilter
 {
 public:
 
@@ -31,7 +31,7 @@ public:
 
 	void CountUnSignedDistance(
 		__inout double **ppDistance,
-		__in bool normalDistance = true
+		__in bool normalDistance
 		);
 
 	double **m_ppSignedDistance;

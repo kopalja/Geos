@@ -5,7 +5,9 @@
 #include "ImageHandler.h"
 #include "GMM.h"
 #include "Probability.h"
+
 #include <functional>
+
 
 
 class Location;
@@ -32,6 +34,7 @@ public:
 	bool ** m_ppResult;
 	int m_width;
 	int m_height;
+	
 
 private:
 	SegmentationType m_SegmentationType;
@@ -96,6 +99,23 @@ private:
 		__in bool ** ppLabeling
 		);
 
+	void CopyLabeling(
+		__in int width,
+		__in int height,
+		__in bool ** ppInputLabeling,
+		__out bool ** ppResultLabeling
+
+	)
+	{
+		for (size_t y = 0; y < height; y++)
+		{
+			for (size_t x = 0; x < width; x++)
+			{
+				ppResultLabeling[x][y] = ppInputLabeling[x][y];
+			}
+		}
+	}
+
 
 
 
@@ -129,34 +149,10 @@ private:
 };
 
 
-
 /*
-// Without Interactive help
-extern "C"  __declspec(dllexport)  void _stdcall  SegmentationProcess( 
-	const char * imagePath, 
-	int segmentationType, 
-	int timeOptimalization,
-	int boundSmoothness,
-	int colorRepresentation,
-	INT32 * data 
-	)
-{
-		Geos g;
-//		g.Process( imagePath );
-		for (int y = 0; y < g.m_height; y++)
-		{
-			for (int x = 0; x < g.m_width; x++)
-			{
-				if ( g.m_ppResult[x][y] )
-					data[y * g.m_width + x] = 1;
-				else 
-					data[y * g.m_width + x] = -1;
-			}
-		}
-}
-
+	Entry point of the library.
+	All parameters are passed in.
 */
-
 
 // With help
 extern "C"  __declspec(dllexport)  void _stdcall  SegmentationProcess( 
@@ -191,10 +187,12 @@ extern "C"  __declspec(dllexport)  void _stdcall  SegmentationProcess(
 		}
 	}
 
+	/* Segmentation method */
 	g.Process( imagePath, const_cast<vector<Location>&>( *pForeGround ), const_cast<vector<Location>&>( *pBackGround ), segmentationType, timeOptimalization, boundSmoothness, colorRepresentation );
 	delete pForeGround;
 	delete pBackGround;
 
+	/* Copying result into one dimensional array */
 	for (int y = 0; y < g.m_height; y++)
 	{
 		for (int x = 0; x < g.m_width; x++)

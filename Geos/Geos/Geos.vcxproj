@@ -22,8 +22,8 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
-    <CLRSupport>true</CLRSupport>
     <CharacterSet>Unicode</CharacterSet>
+    <CLRSupport>true</CLRSupport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -84,6 +84,7 @@
   <ItemGroup>
     <ClInclude Include="ExtendedFunctions.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="SourceGeos\Energy.h" />
     <ClInclude Include="SourceGeos\GaussianBlur.h" />
     <ClInclude Include="SourceGeos\Geos.h" />
     <ClInclude Include="SourceGeos\GMM.h" />
@@ -104,6 +105,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
+    <ClCompile Include="SourceGeos\Energy.cpp" />
     <ClCompile Include="SourceGeos\GaussianBlur.cpp" />
     <ClCompile Include="SourceGeos\Geos.cpp" />
     <ClCompile Include="SourceGeos\GMM.cpp" />

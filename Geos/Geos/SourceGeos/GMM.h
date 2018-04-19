@@ -29,10 +29,14 @@ public:
 };
 
 
-class GMM
+ref class GMM
 {
 public:
-	GMM(void);
+
+
+	GMM( 
+		__in bool rgbType
+	);
 	~GMM(void);
 
 	void AutomaticProbability(
@@ -115,6 +119,10 @@ private:
 
 	double * m_pProbClass;					// 𝑷(𝒄)
 
-	double getGaussVar[2][3];
+	//double getGaussVar[2][3];
+	double ** getGaussVar;
+	bool m_RgbType;
+
+	
 };
 

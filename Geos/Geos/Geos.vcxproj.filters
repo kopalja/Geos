@@ -84,6 +84,9 @@
     <ClInclude Include="ExtendedFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SourceGeos\Energy.h">
+      <Filter>Header Files\Geos</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp">
@@ -135,6 +138,9 @@
       <Filter>Source Files\Geos</Filter>
     </ClCompile>
     <ClCompile Include="SourceGeos\GaussianBlur.cpp">
+      <Filter>Source Files\Geos</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceGeos\Energy.cpp">
       <Filter>Source Files\Geos</Filter>
     </ClCompile>
   </ItemGroup>

@@ -157,7 +157,6 @@ HRESULT ImageHandler::SetFrames()
 					hr = piFrameDecode->GetSize(&width, &height);
 					if (SUCCEEDED(hr))
 					{
-
 						hr = piFrameEncode->SetSize( width, height );
 						// Get and set the resolution.
 						if (SUCCEEDED(hr))

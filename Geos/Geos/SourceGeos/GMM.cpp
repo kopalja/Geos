@@ -2,13 +2,17 @@
 #include "GMM.h"
 
 #include <iostream>
+#include <ctime>
+
 using namespace std;
+using namespace System::Threading;
 
 const double M_PI = 3.14159265358979323846264338327950288;
 
 
-GMM::GMM(void)
+GMM::GMM( __in bool rgbType )
 {
+	m_RgbType = rgbType;
 	m_nMaxLoop = 10;
 
 	m_pNumClass = 0;
@@ -17,6 +21,10 @@ GMM::GMM(void)
 	m_ppSumVarClass = 0;
 	m_ppMeanFeatClass = 0;
 	m_ppVarFeatClass = 0;
+
+	getGaussVar = new double*[2];
+	getGaussVar[0] = new double[3];
+	getGaussVar[1] = new double[3];
 }
 
 GMM::~GMM(void)
@@ -35,6 +43,10 @@ GMM::~GMM(void)
 	delete[] m_ppSumVarClass;
 	delete[] m_ppMeanFeatClass;
 	delete[] m_ppVarFeatClass;
+
+	delete[] getGaussVar[0];
+	delete[] getGaussVar[1];
+	delete[] getGaussVar;
 }			
 
 void GMM::AutomaticProbability( __in const Image & rImage, __out double ** ppProbability )
@@ -46,11 +58,13 @@ void GMM::AutomaticProbability( __in const Image & rImage, __out double ** ppPro
 	{
 		for (int x = 0; x < rImage.width; x++)
 		{
-			RgbToLab( rImage.buffer[( i * 3 ) + 2], rImage.buffer[( i * 3 ) + 1], rImage.buffer[( i * 3 ) + 0], pLab );
-
-			ppData[i].L = rImage.buffer[( i * 3 ) + 2];
-			ppData[i].A = rImage.buffer[( i * 3 ) + 1];
-			ppData[i].B = rImage.buffer[( i * 3 ) + 0];
+			if ( !m_RgbType )
+				RgbToLab( rImage.buffer[( i * 3 ) + 2], rImage.buffer[( i * 3 ) + 1], rImage.buffer[( i * 3 ) + 0], pLab );
+			else
+			{
+				for (int j = 0; j < 3; j++)
+					pLab[j] = rImage.buffer[(i * 3) + 2 - j];
+			}
 
 			ppData[i].L = pLab[0];
 			ppData[i].A = pLab[1];
@@ -84,32 +98,7 @@ void GMM::AutomaticProbability( __in const Image & rImage, __out double ** ppPro
 			i++;
 		}
 	}
-
-	cout << "Mean" << endl;
-	cout << m_ppMeanFeatClass[0][0]<< endl;
-	cout << m_ppMeanFeatClass[0][1] << endl;
-	cout << m_ppMeanFeatClass[0][2] << endl;
-	cout << "--------" << endl;
-
-	cout << m_ppMeanFeatClass[1][0]<< endl;
-	cout << m_ppMeanFeatClass[1][1] << endl;
-	cout << m_ppMeanFeatClass[1][2] << endl;
-	cout << "--------" << endl;
-
-
-	cout << "Variance" << endl;
-	cout << m_ppVarFeatClass[0][0]<< endl;
-	cout << m_ppVarFeatClass[0][1] << endl;
-	cout << m_ppVarFeatClass[0][2] << endl;
-
-	cout << "--------" << endl;
-	cout << m_ppVarFeatClass[1][0]<< endl;
-	cout << m_ppVarFeatClass[1][1] << endl;
-	cout << m_ppVarFeatClass[1][2] << endl;
-	cout << "--------" << endl;
-	cout << "NUmber in gaus" << endl;
-	cout << m_pNumClass[0] << endl;
-	cout << m_pNumClass[1] << endl;
+	delete[] pLab;
 }
 
 
@@ -121,6 +110,7 @@ void GMM::InteractiveProbability(
 		__out double ** ppProbability 
 		)
 {
+	clock_t start = clock();
 	double ** tempProbability = new double*[rImage.width];
 	for (int i = 0; i < rImage.width; i++)
 	{
@@ -130,9 +120,12 @@ void GMM::InteractiveProbability(
 	/* number of gaussians, size of feature */
 	init( 2, 3 );
 
+	/* Model for foreground */
 	CreateModel( rImage, 2, rForeGround, ppProbability );
+	/* Model for background */
 	CreateModel( rImage, 2, rBackGround, tempProbability );
 
+	/* Evaluate all pixels in model */
 	for (int y = 0; y < rImage.height; y++)
 	{
 		for (int x = 0; x < rImage.width; x++)
@@ -146,7 +139,6 @@ void GMM::InteractiveProbability(
 		delete tempProbability[i];
 	}
 	delete tempProbability;
-	
 }
 
 
@@ -160,28 +152,21 @@ void GMM::CreateModel( __in const Image & rImage, __in int numberOfGaussian, __i
 	for (int i = 0; i < numberOfSamples; i++)
 	{
 		int index = ( rTrainData.at( i ).y * rImage.width + rTrainData.at( i ).x ) * 3;
-		ppData[i].L = rImage.buffer[index + 2];
-		ppData[i].A = rImage.buffer[index + 1];
-		ppData[i].B = rImage.buffer[index + 0];
+
+		if (!m_RgbType)
+			RgbToLab(rImage.buffer[index + 2], rImage.buffer[index + 1], rImage.buffer[index + 0], pLab);
+		else
+		{
+			for (int j = 0; j < 3; j++)
+				pLab[j] = rImage.buffer[index + 2 - j];
+		}
+
+		ppData[i].L = pLab[0];
+		ppData[i].A = pLab[1];
+		ppData[i].B = pLab[2];
 		ppData[i].nClass = -1;
 	}
 
-	//for (int y = 0; y < rImage.height; y++)
-	//{
-	//	for (int x = 0; x < rImage.width; x++)
-	//	{
-	//		if ( ppTrainData[x][y] )
-	//		{
-	//			int index = ( y * rImage.width + x ) * 3;
-
-	//			ppData[i].L = rImage.buffer[index + 2];
-	//			ppData[i].A = rImage.buffer[index + 1];
-	//			ppData[i].B = rImage.buffer[index + 0];
-	//			ppData[i].nClass = -1;
-	//			i++;
-	//		}
-	//	}
-	//}
 
 	train( ppData, numberOfSamples);
 	double *pProbability = new double[m_nSizeK];
@@ -190,12 +175,19 @@ void GMM::CreateModel( __in const Image & rImage, __in int numberOfGaussian, __i
 		for (int x = 0; x < rImage.width; x++)
 		{
 			int index = ( y * rImage.width + x ) * 3; 
+			if (!m_RgbType)
+				RgbToLab(rImage.buffer[index + 2], rImage.buffer[index + 1], rImage.buffer[index + 0], pLab);
+			else
+			{
+				for (int j = 0; j < 3; j++)
+					pLab[j] = rImage.buffer[index + 2 - j];
+			}
 			for( int b = 0; b < m_nSizeK; b++ ) 
 			{
 				pProbability[b] = 1;
-				pProbability[b] *= getgaussFast( m_ppMeanFeatClass[b][0], getGaussVar[b][0], m_ppVarFeatClass[b][0], rImage.buffer[index + 2] );
-				pProbability[b] *= getgaussFast( m_ppMeanFeatClass[b][1], getGaussVar[b][1], m_ppVarFeatClass[b][1], rImage.buffer[index + 1] );
-				pProbability[b] *= getgaussFast( m_ppMeanFeatClass[b][2], getGaussVar[b][0], m_ppVarFeatClass[b][2], rImage.buffer[index + 0] );
+				pProbability[b] *= getgaussFast( m_ppMeanFeatClass[b][0], getGaussVar[b][0], m_ppVarFeatClass[b][0], pLab[0] );
+				pProbability[b] *= getgaussFast( m_ppMeanFeatClass[b][1], getGaussVar[b][1], m_ppVarFeatClass[b][1], pLab[1] );
+				pProbability[b] *= getgaussFast( m_ppMeanFeatClass[b][2], getGaussVar[b][0], m_ppVarFeatClass[b][2], pLab[2] );
 			}
 			
 			ppProbabilityInModel[x][y] = 0;
@@ -205,7 +197,8 @@ void GMM::CreateModel( __in const Image & rImage, __in int numberOfGaussian, __i
 			}
 		}
 	}
-	delete ppData;
+	delete[] pLab;
+	delete[] ppData;
 }
 
 
@@ -413,25 +406,25 @@ inline double GMM::getgaussFast(double dMean, double dVar, double var, double dV
 
 inline void GMM::RgbToLab( __in BYTE red, __in BYTE green, __in BYTE blue, __out_bcount(3) double * pLab )
 {
-	 double r = red / 255.0;
-     double g = green / 255.0;
-     double b = blue / 255.0;
-	 double x,y,z;
+	double r = red / 255.0;
+    double g = green / 255.0;
+    double b = blue / 255.0;
+	double x,y,z;
 
-	  r = (r > 0.04045) ? pow((r + 0.055) / 1.055, 2.4) : r / 12.92;
-	  g = (g > 0.04045) ? pow((g + 0.055) / 1.055, 2.4) : g / 12.92;
-	  b = (b > 0.04045) ? pow((b + 0.055) / 1.055, 2.4) : b / 12.92;
+	r = (r > 0.04045) ? pow((r + 0.055) / 1.055, 2.4) : r / 12.92;
+	g = (g > 0.04045) ? pow((g + 0.055) / 1.055, 2.4) : g / 12.92;
+	b = (b > 0.04045) ? pow((b + 0.055) / 1.055, 2.4) : b / 12.92;
 
-	  x = (r * 0.4124 + g * 0.3576 + b * 0.1805) / 0.95047;
-	  y = (r * 0.2126 + g * 0.7152 + b * 0.0722) / 1.00000;
-	  z = (r * 0.0193 + g * 0.1192 + b * 0.9505) / 1.08883;
+	x = (r * 0.4124 + g * 0.3576 + b * 0.1805) / 0.95047;
+	y = (r * 0.2126 + g * 0.7152 + b * 0.0722) / 1.00000;
+	z = (r * 0.0193 + g * 0.1192 + b * 0.9505) / 1.08883;
 
-	  x = (x > 0.008856) ? pow(x, 1.0 / 3.0) : (7.787 * x) + 16.0 / 116.0;
-	  y = (y > 0.008856) ? pow(y, 1.0 / 3.0) : (7.787 * y) + 16.0 / 116.0;
-	  z = (z > 0.008856) ? pow(z, 1.0 / 3.0) : (7.787 * z) + 16.0 / 116.0;
+	x = (x > 0.008856) ? pow(x, 1.0 / 3.0) : (7.787 * x) + 16.0 / 116.0;
+	y = (y > 0.008856) ? pow(y, 1.0 / 3.0) : (7.787 * y) + 16.0 / 116.0;
+	z = (z > 0.008856) ? pow(z, 1.0 / 3.0) : (7.787 * z) + 16.0 / 116.0;
 
-	  pLab[0] = (116.0 * y) - 16.0;
-	  pLab[1] = 500.0 * (x - y);
-	  pLab[2] = 200.0 * (y - z);
+	pLab[0] = (116.0 * y) - 16.0;
+	pLab[1] = 500.0 * (x - y);
+	pLab[2] = 200.0 * (y - z);
 }
 

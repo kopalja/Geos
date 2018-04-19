@@ -19,6 +19,7 @@ public:
 
 	void GetProbabitily(
 		__in SegmentationType segmentationType,
+		__in bool rgbType,
 		__in const Image & rOrigin,
 		__in const Image & rGrayImage,
 		__in const vector<Location> & rForeground, 
@@ -27,6 +28,8 @@ public:
 		);
 
 private:
+
+	bool m_RgbType;
 
 	void InteractiveProbability(
 		__in const Image & rOrigin,

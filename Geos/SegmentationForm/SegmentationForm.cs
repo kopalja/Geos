@@ -11,6 +11,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Drawing.Imaging;
+using System.Threading;
 
 namespace SegmentationForm
 {
@@ -39,8 +40,11 @@ namespace SegmentationForm
             int backgroundSize
             );
 
-       // [DllImport("Geos.dll", CallingConvention = CallingConvention.StdCall)]
-       // static public extern void SegmentationProcess(String imagePath, int segmentationType, int[] labeling);
+        // [DllImport("Geos.dll", CallingConvention = CallingConvention.StdCall)]
+        // static public extern void SegmentationProcess(String imagePath, int segmentationType, int[] labeling);
+
+        private const int maxWidth = 1000;
+        private const int maxHeight = 700;
 
         private string inputImagePath;
         private Pen pen;
@@ -50,6 +54,8 @@ namespace SegmentationForm
         private Color backGroundColor;
         private string saveImagePath = "";
         private bool originImageVisible = true;
+        private bool imageSelected = false;
+        private CancellationTokenSource cancelToken = new CancellationTokenSource();
 
         // Parameters for segmentation
         private List<int> foregroundX = new List<int>();
@@ -66,7 +72,7 @@ namespace SegmentationForm
         {
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
-            pictureBox.Top = 25;
+            pictureBox.Top = menuStrip1.Height;
             pictureBox.Left = 0;
             pictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
             progressBar1.Visible = false;
@@ -83,34 +89,38 @@ namespace SegmentationForm
             LoadImageDialog();
         }
 
+        private void UnlockButtons()
+        {
+            ParamsStrip.Enabled = true;
+            SelectStrip.Enabled = true;
+            StartStrip.Enabled = true;
+
+        }
+
         private void OriginPictureBox_MouseMove(object sender, MouseEventArgs e)
         {
-            var position  = TranslateZoomMousePosition(new Point(e.Location.X, e.Location.Y));
-
-
-
-
-            Graphics g = Graphics.FromImage(originImage);
-            if (pen != Pen.None && e.Button == System.Windows.Forms.MouseButtons.Left)
+            if (imageSelected)
             {
-                if (pen == Pen.Foreground)
+                var position = TranslateZoomMousePosition(new Point(e.Location.X, e.Location.Y));
+                Graphics g = Graphics.FromImage(originImage);
+                if (pen != Pen.None && e.Button == System.Windows.Forms.MouseButtons.Left)
                 {
-                    g.FillEllipse(Brushes.Blue, position.X - 10, position.Y - 10, 20, 20);
+                    if (pen == Pen.Foreground)
+                    {
+                        g.FillEllipse(Brushes.Blue, position.X - 10, position.Y - 10, 20, 20);
 
-                    foregroundX.Add(position.X);
-                    foregroundY.Add(position.Y);
+                        foregroundX.Add(position.X);
+                        foregroundY.Add(position.Y);
+                    }
+                    else
+                    {
+                        g.FillEllipse(Brushes.Red, position.X - 10, position.Y - 10, 20, 20);
+
+                        backgroundX.Add(position.X);
+                        backgroundY.Add(position.Y);
+                    }
+                    pictureBox.Image = originImage;
                 }
-                else
-                {
-                    g.FillEllipse(Brushes.Red, position.X - 10, position.Y - 10, 20, 20);
-
-                    backgroundX.Add(position.X);
-                    backgroundY.Add(position.Y);
-                }
-
-
-
-                pictureBox.Image = originImage;
             }
         }
 
@@ -129,8 +139,10 @@ namespace SegmentationForm
 
         private void SaveStrip_Click(object sender, EventArgs e)
         {
-            if ( saveImagePath != "")
+            if (saveImagePath != "")
                 resultImage.Save(saveImagePath);
+            else
+                SaveAsStrip_Click(sender, e);
 
         }
 
@@ -155,8 +167,8 @@ namespace SegmentationForm
                         Bitmap output = resultImage.Clone(r, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
                         output.MakeTransparent(Color.White);
                         output.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
-                        saveImagePath = saveDialog.FileName;
                     }
+                    saveImagePath = saveDialog.FileName;
                     stream.Close();
                 }
             }
@@ -198,8 +210,18 @@ namespace SegmentationForm
             EditParams.segmentationType = EditParams.Segmentationtype.Sharp;
             TypeStrip.Text = "Type -> Sharp";
             SharpStrip.Checked = true;
+            SharpAndColorStrip.Checked = false;
             ColorStrip.Checked = false;
 
+        }
+
+        private void SharpAndColorStrip_Click(object sender, EventArgs e)
+        {
+            EditParams.segmentationType = EditParams.Segmentationtype.SharpAndColor;
+            TypeStrip.Text = "Type -> Sharp&Color";
+            SharpStrip.Checked = false;
+            SharpAndColorStrip.Checked = true;
+            ColorStrip.Checked = false;
         }
 
         private void ColorStrip_Click(object sender, EventArgs e)
@@ -207,6 +229,7 @@ namespace SegmentationForm
             EditParams.segmentationType = EditParams.Segmentationtype.Color;
             TypeStrip.Text = "Type -> Color";
             SharpStrip.Checked = false;
+            SharpAndColorStrip.Checked = false;
             ColorStrip.Checked = true;
         }
 
@@ -217,7 +240,6 @@ namespace SegmentationForm
             BlackStrip.Checked = true;
             WhiteStrip.Checked = false;
             GreenStrip.Checked = false;
-            TransparentStrip.Checked = false;
         }
 
         private void WhiteStrip_Click(object sender, EventArgs e)
@@ -227,7 +249,6 @@ namespace SegmentationForm
             BlackStrip.Checked = false;
             WhiteStrip.Checked = true;
             GreenStrip.Checked = false;
-            TransparentStrip.Checked = false;
         }
 
         private void GreenStrip_Click(object sender, EventArgs e)
@@ -237,17 +258,6 @@ namespace SegmentationForm
             BlackStrip.Checked = false;
             WhiteStrip.Checked = false;
             GreenStrip.Checked = true;
-            TransparentStrip.Checked = false;
-        }
-
-        private void TransparentStrip_Click(object sender, EventArgs e)
-        {
-            backGroundColor = Color.Transparent;
-            BackgroundColorStrip.Text = "Background -> Transparent";
-            BlackStrip.Checked = false;
-            WhiteStrip.Checked = false;
-            GreenStrip.Checked = false;
-            TransparentStrip.Checked = true;
         }
 
         private void EditStrip_Click(object sender, EventArgs e)
@@ -259,12 +269,21 @@ namespace SegmentationForm
             {
                 TypeStrip.Text = "Type -> Sharp";
                 SharpStrip.Checked = true;
+                SharpAndColorStrip.Checked = false;
+                ColorStrip.Checked = false;
+            }
+            else if (EditParams.segmentationType == EditParams.Segmentationtype.SharpAndColor)
+            {
+                TypeStrip.Text = "Type -> SharpAndColor";
+                SharpStrip.Checked = false;
+                SharpAndColorStrip.Checked = true;
                 ColorStrip.Checked = false;
             }
             else
             {
                 TypeStrip.Text = "Type -> Color";
                 SharpStrip.Checked = false;
+                SharpAndColorStrip.Checked = false;
                 ColorStrip.Checked = true;
             }
         }
@@ -310,11 +329,62 @@ namespace SegmentationForm
         /* Start Strip Actions */
         private void StartStrip_Click(object sender, EventArgs e)
         {
-            pictureBox.Image = opacityImage;
-            progressBar1.Visible = true;
-            Task.Factory.StartNew(Segment).ContinueWith(t => { progressBar1.Visible = false; pictureBox.Image = resultImage; SwitchStrip.Visible = true; originImageVisible = false; }, TaskScheduler.FromCurrentSynchronizationContext());
+            /* If in process */
+            if (progressBar1.Visible)
+            {
+                cancelToken.Cancel();
+                SegmentationEnd(succes: false);
+            }
+            else
+            {
+                if (SegmentationStart())
+                {
+                    Task.Factory.StartNew(Segment).ContinueWith(t =>
+                    {
+                        SegmentationEnd(succes: true);
+                    }, cancelToken.Token, TaskContinuationOptions.None, TaskScheduler.FromCurrentSynchronizationContext());
+                }
+            }
         }
 
+        private bool SegmentationStart()
+        {
+            if ((foregroundX.Count != 0 && backgroundX.Count == 0) || (foregroundX.Count == 0 && backgroundX.Count != 0))
+            {
+                MessageBox.Show("Background and foreground have to be specified");
+                return false;
+            }
+
+            pictureBox.Image = opacityImage;
+            progressBar1.Visible = true;
+            SwitchStrip.Visible = false;
+
+            fileToolStripMenuItem.Enabled = false;
+            ParamsStrip.Enabled = false;
+            SelectStrip.Enabled = false;
+
+            StartStrip.Text = "Stop F5";
+            StartStrip.Image = Properties.Resources.stopIcon3;
+            return true;
+        }
+
+        private void SegmentationEnd(bool succes)
+        {
+            cancelToken = new CancellationTokenSource();
+            progressBar1.Visible = false;
+            pictureBox.Image = resultImage;
+            if (succes)
+                SwitchStrip.Visible = true;
+            originImageVisible = false;
+            SetSaveButtonsVisibility(succes);
+
+            fileToolStripMenuItem.Enabled = true;
+            ParamsStrip.Enabled = true;
+            SelectStrip.Enabled = true;
+
+            StartStrip.Text = "Sart F5";
+            StartStrip.Image = Properties.Resources.startIcon;
+        }
 
 
         /*-------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -326,7 +396,7 @@ namespace SegmentationForm
         private void LoadImageDialog()
         {
             OpenFileDialog fileDialog = new OpenFileDialog();
-            fileDialog.Filter = "Image files (*.jpg, *.jpeg, *.jpe) | *.jpg; *.jpeg; *.jpe";
+            fileDialog.Filter = "Image files (*.jpg ) | *.jpg; ";
             fileDialog.RestoreDirectory = true;
 
             if (fileDialog.ShowDialog(this) == DialogResult.OK)
@@ -340,16 +410,33 @@ namespace SegmentationForm
                     inputImagePath = fileDialog.FileName.ToString();
                     CreateOpacityImage();
                     SwitchStrip.Visible = false;
+                    imageSelected = true;
+                    SetSaveButtonsVisibility(false);
+                    NoneStrip_Click(null, null);
+
                 }
             }
+            if (imageSelected)
+                UnlockButtons();
+        }
+
+        private void SetSaveButtonsVisibility(bool enabled)
+        {
+            SaveStrip.Enabled = enabled;
+            SaveAsStrip.Enabled = enabled;
         }
 
         private void SetSizes(int width, int height)
         {
-            if (originImage.Width > 1000)
+            if (originImage.Width > maxWidth)
             {
-                width = 1000;
-                height = 1000 * height / originImage.Width;
+                width = maxWidth;
+                height = (int)Math.Round((double)maxWidth * (double)originImage.Height / (double)originImage.Width);
+            }
+            if (height > maxHeight)
+            {
+                width = (int)Math.Round((double)maxHeight * (double)width / (double)height);
+                height = maxHeight;
             }
             pictureBox.Width = width;
             pictureBox.Height = height;
@@ -386,12 +473,10 @@ namespace SegmentationForm
         private void Segment()
         {
             resultImage = new Bitmap(inputImagePath);
-
             //result
             int[] labeling = new int[resultImage.Width * resultImage.Height];
 
 
-            Console.WriteLine("match 1 " + foregroundX.Count.ToString() );
 
             if (foregroundX.Count == 0 || backgroundX.Count == 0)
                 SegmentationProcess(
@@ -424,12 +509,53 @@ namespace SegmentationForm
                     backgroundX.Count
                     );
 
+            Console.WriteLine("Dll finished");
+            SetBitmap(labeling);
+           // Compare(labeling);
+            Compare2();
 
-            for (int i = 0; i < resultImage.Width * resultImage.Height; i++)
+            //for (int i = 0; i < resultImage.Width * resultImage.Height; i++)
+            //{
+            //    if (labeling[i] < 0)
+            //        resultImage.SetPixel(i % resultImage.Width, i / resultImage.Width, backGroundColor);
+            //}
+        }
+
+        private void Compare2()
+        {
+            System.IO.StreamWriter file = new StreamWriter("C:\\Users\\kopi\\Downloads\\adobe\\score.txt");
+            double sum = 0;
+            for (int i = 1; i <= 31; i++)
             {
-                if (labeling[i] < 0)
-                    resultImage.SetPixel(i % resultImage.Width, i / resultImage.Width, backGroundColor);
+                string adobePath = "C:\\Users\\kopi\\Downloads\\adobe\\sample" + i.ToString() + ".jpg";
+                string groundPath = "C:\\Users\\kopi\\Downloads\\groundtruth\\sample" + i.ToString() + ".jpg";
+
+                Bitmap b1 = new Bitmap(adobePath);
+                Bitmap b2 = new Bitmap(groundPath);
+
+                int match = 0;
+                for (int y = 0; y < b1.Height; y++)
+                {
+                    for (int x = 0; x < b1.Width; x++)
+                    {
+                        var temp1 = b1.GetPixel(x, y);
+                        var temp2 = b2.GetPixel(x, y);
+
+                        if (temp1.R > 100 && temp1.G > 100 && temp1.B > 100 && temp2.R > 100 && temp2.G > 100 && temp2.B > 100)
+                            match++;
+                        else if (temp1.R < 100 && temp1.G < 100 && temp1.B < 100 && temp2.R < 100 && temp2.G < 100 && temp2.B < 100)
+                            match++;
+                    }
+                }
+                double ans = (double)match / (double)(b1.Width * b1.Height) * 100.0;
+                sum += Math.Round(ans, 2);
+                file.WriteLine(i.ToString() + '\t' + Math.Round(ans, 2));
             }
+            sum /= 31;
+            sum = Math.Round(sum, 2);
+            file.WriteLine("======");
+            file.WriteLine("mean" + '\t' + sum.ToString());
+            file.Close();
         }
 
         protected Point TranslateZoomMousePosition(Point coordinates)
@@ -450,16 +576,77 @@ namespace SegmentationForm
             return new Point((int)newX, (int)newY);
         }
 
+        unsafe private void SetBitmap(int[] labeling)
+        {
+            BitmapData imageData = resultImage.LockBits(new Rectangle(0, 0, resultImage.Width, resultImage.Height), ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
+            int bytesPerPixel = 3;
+
+            byte* scan0 = (byte*)imageData.Scan0.ToPointer();
+            int stride = imageData.Stride;
 
 
 
 
+            int i = 0;
+            for (int y = 0; y < imageData.Height; y++)
+            {
+                byte* row = scan0 + (y * stride);
+
+                for (int x = 0; x < imageData.Width; x++)
+                {
+                    // Watch out for actual order (BGR)!
+                    if (labeling[i] < 0)
+                    {
+                        int bIndex = x * bytesPerPixel;
+                        int gIndex = bIndex + 1;
+                        int rIndex = bIndex + 2;
+
+                        row[rIndex] = backGroundColor.R;
+                        row[gIndex] = backGroundColor.G;
+                        row[bIndex] = backGroundColor.B;
+                    }
+                    i++;
+                }
+            }
+
+            resultImage.UnlockBits(imageData);
+
+        }
+
+        private void Compare(int[] labeling)
+        {
+            string from = "C:\\Users\\kopi\\Downloads\\groundtruth\\sample6.jpg";
+            Bitmap toSave = new Bitmap(originImage.Width, originImage.Height);
+            Bitmap ground = new Bitmap(from);
+            int i = 0;
+            int match = 0;
+            for (int y = 0; y < ground.Height; y++)
+            {
+                for (int x = 0; x < ground.Width; x++)
+                {
+                    var p = ground.GetPixel(x, y);
+                    if (labeling[i] >= 0 && p.R > 100 && p.G > 100 && p.B > 100)
+                        match++;
+                    else if (labeling[i] < 0 && p.R == 0 && p.G == 0 && p.B == 0)
+                        match++;
+
+                    if (labeling[i] >= 0)
+                        toSave.SetPixel(x, y, Color.White);
+                    else
+                        toSave.SetPixel(x, y, Color.Black);
+                    i++;
+                }
+            }
+            toSave.Save(from.Replace("groundtruth", "geos"));
+            Console.WriteLine( "match " + (double)match / (double)(ground.Width * ground.Height) * 100.0 + " %");
+        }
     }
+
 
     static class EditParams
     {
         public enum Segmentationtype { Sharp = 0, Color = 1, SharpAndColor = 2 }
-        public static Segmentationtype segmentationType = Segmentationtype.SharpAndColor;
+        public static Segmentationtype segmentationType = Segmentationtype.Sharp;
 
         public enum TimeOptimalization { Low = 0, Medium = 1, High = 2 }
         public static TimeOptimalization timeOptimalization = TimeOptimalization.Medium;
@@ -468,6 +655,6 @@ namespace SegmentationForm
         public static BoundSmoothness boundSmoothness = BoundSmoothness.Normal;
 
         public enum ColorRepresentation { RGB = 0, LAB = 1 }
-        public static ColorRepresentation colorRepresentation = ColorRepresentation.LAB;
+        public static ColorRepresentation colorRepresentation = ColorRepresentation.RGB;
     }
 }

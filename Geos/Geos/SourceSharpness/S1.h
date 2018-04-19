@@ -3,9 +3,28 @@
 #include "LargeBlock.h"
 
 
-class S1
+ref class S1
 {
 public:
+
+	S1(__in const Image & pGrayImage):pGrayImage(pGrayImage) {};
+
+	S1(
+		__in int fourierReduciton,
+		__in bool skin,
+		__in const Image & pGrayImage,
+		__out Image* pS1Image
+	) : pGrayImage(pGrayImage)
+	{
+		this->fourierReduciton = fourierReduciton;
+		this->skin = skin;
+		this->pS1Image = pS1Image;
+	}
+
+	void EntryPoint()
+	{
+		CreateS1(fourierReduciton, skin, pGrayImage, pS1Image);
+	}
 
 	void CreateS1( 
 		__in int fourierReduciton,
@@ -14,7 +33,13 @@ public:
 		__out Image* pS1Image
 		);
 
+
+
 private:
+	int fourierReduciton;
+	bool skin;
+	const Image & pGrayImage;
+	Image* pS1Image;
 
 	void CountFirstRow( 
 		__out_ecount( numberOfBlocks ) LargeBlock* rowToCount,

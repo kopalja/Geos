@@ -62,9 +62,9 @@ namespace SegmentationForm
         private void ColorBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             SetNewState(ColorBox);
-            if (TetaBox.GetItemChecked(0))
+            if (ColorBox.GetItemChecked(0))
                 EditParams.colorRepresentation = EditParams.ColorRepresentation.RGB;
-            else if (TetaBox.GetItemChecked(1))
+            else if (ColorBox.GetItemChecked(1))
                 EditParams.colorRepresentation = EditParams.ColorRepresentation.LAB;
         }
 
