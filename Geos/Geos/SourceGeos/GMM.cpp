@@ -4,8 +4,7 @@
 #include <iostream>
 #include <ctime>
 
-using namespace std;
-using namespace System::Threading;
+
 
 const double M_PI = 3.14159265358979323846264338327950288;
 
@@ -92,7 +91,7 @@ void GMM::AutomaticProbability( __in const Image & rImage, __out double ** ppPro
 				pProbability[b] *= getgauss( m_ppMeanFeatClass[b][2], m_ppVarFeatClass[b][2], ppData[i].B );
 			}
 
-			ppProbability[x][y] = log( pProbability[0] ) - log( pProbability[1] );
+			ppProbability[x][y] = log( pProbability[1] ) - log( pProbability[0] );
 			ppProbability[x][y] = 1.0 / ( 1.0 + exp( - ppProbability[x][y] / 10.0 ) );
 
 			i++;
@@ -130,8 +129,8 @@ void GMM::InteractiveProbability(
 	{
 		for (int x = 0; x < rImage.width; x++)
 		{
-			ppProbability[x][y] = log( ppProbability[x][y] ) - log( tempProbability[x][y] );
-			ppProbability[x][y] = 1.0 / ( 1.0 + exp( - ppProbability[x][y] / 10.0 ) );
+			ppProbability[x][y] = log10( ppProbability[x][y] ) - log10( tempProbability[x][y] );
+			ppProbability[x][y] = 1.0 / ( 1.0 + exp( - ppProbability[x][y] / 40.0 ) );
 		}
 	}
 	for (int i = 0; i < rImage.width; i++)

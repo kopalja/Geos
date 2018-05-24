@@ -10,12 +10,11 @@
 #include <ctime>
 #include <iostream>
 
-using namespace System;
 
 
 using namespace std;
 
-using namespace System::Threading;
+
 
 
 
@@ -149,7 +148,7 @@ void S3::GrayScale( __in const Image & pOrigin, __out Image *pGrayImage )
 	}
 }
 
-void S3::GrayToResult( __in ResultType resultType, __in int fourierReduction, __in bool skin, __in const Image & pGrayImage, __out Image *pResultImage )
+void S3::GrayToResult( __in ResultType resultType, __in int fourierReduction, __in bool skin, __in const Image & rGrayImage, __out Image *pResultImage )
 {
 	//std::clock_t clock;
 	//int start = std::clock();
@@ -168,7 +167,7 @@ void S3::GrayToResult( __in ResultType resultType, __in int fourierReduction, __
 	else if ( resultType == ResultType::S2Image )
 	{
 		S2 s2Algorithm;
-		s2Algorithm.CreateS2( pGrayImage, pResultImage );
+		s2Algorithm.CreateS2( rGrayImage, pResultImage );
 		//duration = ( std::clock() - start ); cout << "S2 : " << duration << endl; start = std::clock();
 		_ASSERTE( _CrtCheckMemory() );
 	}
@@ -180,19 +179,18 @@ void S3::GrayToResult( __in ResultType resultType, __in int fourierReduction, __
 
 
 		/* multithread version */
-		S1^ s1 = gcnew S1( fourierReduction, skin, pGrayImage, pResultImage );
-		Thread^ t = gcnew Thread(gcnew ThreadStart(s1, &S1::EntryPoint));
-		t->Start();
+		//S1^ s1 = new S1( fourierReduction, skin, rGrayImage, pResultImage );
+		//Thread^ t = gcnew Thread(gcnew ThreadStart(s1, &S1::EntryPoint));
+		//t->Start();
 
-		//S1 s1Algorithm(pGrayImage);
-		//s1Algorithm.CreateS1( fourierReduction, skin, pGrayImage, pResultImage );
+		S1 s1Algorithm(rGrayImage);
+		s1Algorithm.CreateS1( fourierReduction, skin, rGrayImage, pResultImage );
 		//duration = ( std::clock() - start ); cout << "S1 : " << duration << endl; start = std::clock();
 
 		S2 s2Algorithm;
-		s2Algorithm.CreateS2(pGrayImage, pTempImage);
+		s2Algorithm.CreateS2( rGrayImage, pTempImage );
 		//duration = ( std::clock() - start ); cout << "S2 : " << duration << endl; start = std::clock();
 
-		t->Join();
 
 		Merge( pTempImage, pResultImage );
 		//duration = ( std::clock() - start ); cout << "Merge : " << duration << endl; start = std::clock();

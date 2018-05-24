@@ -72,7 +72,7 @@ void Probability::InteractiveProbability( __in const Image & rOrigin, __in const
 		ppBackGroundDistance[rBackGround.at( i ).x][rBackGround.at( i ).y] = 0; 
 	}
 
-	SymmetricalFilter s( 2.0, rGrayImage );
+	SymmetricalFilter s( 0.5, rGrayImage );
 	for (int i = 0; i < 3; i++)
 	{
 		s.CountUnSignedDistance(ppForeGroundDistance, true);
@@ -96,14 +96,19 @@ void Probability::InteractiveProbability( __in const Image & rOrigin, __in const
 			double temp = 1.0 - ( MAX_DISTANCE + ppForeGroundDistance[x][y] - ppBackGroundDistance[x][y] ) / ( MAX_DISTANCE * 2.0 );
 
 			ppProbability[x][y] = ( ppProbability[x][y] + ppGmmProbability[x][y] + temp ) / 3;
+
 		}
 	}
 
 
 	for (int i = 0; i < rOrigin.width; i++)
 	{
+		delete[] ppForeGroundDistance[i];
+		delete[] ppBackGroundDistance[i];
 		delete[] ppGmmProbability[i];
 	}
+	delete[] ppForeGroundDistance;
+	delete[] ppBackGroundDistance;
 	delete[] ppGmmProbability;
 }
 

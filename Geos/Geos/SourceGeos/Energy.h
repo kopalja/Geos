@@ -16,7 +16,7 @@
 */
 
 
-ref class Energy
+class Energy
 {
 public:
 	/* Final results */
@@ -25,7 +25,7 @@ public:
 
 	Energy(
 		__in int diameter,
-		__in SymmetricalFilter ^ symmetricalFilter,
+		__in SymmetricalFilter * symmetricalFilter,
 		__in double ** ppProbability,
 		__in Image & rGrayImage
 	) : rGrayImage(rGrayImage)
@@ -60,7 +60,7 @@ public:
 
 private:
 	int diameter;
-	SymmetricalFilter ^ symmetricalFilter;
+	SymmetricalFilter * symmetricalFilter;
 	double ** ppProbability;
 	Image & rGrayImage;
 

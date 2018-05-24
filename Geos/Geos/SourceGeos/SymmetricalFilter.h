@@ -5,7 +5,7 @@
 
 
 
-ref class SymmetricalFilter
+class SymmetricalFilter
 {
 public:
 

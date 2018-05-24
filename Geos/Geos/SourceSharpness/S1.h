@@ -3,7 +3,7 @@
 #include "LargeBlock.h"
 
 
-ref class S1
+class S1
 {
 public:
 

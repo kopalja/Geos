@@ -14,8 +14,6 @@ C:\Users\User\Documents\GitHub\Geos\Geos\SegmentationForm\bin\Release\Geos.pdb
 C:\Users\kopi\Documents\Github\Geos\Geos\SegmentationForm\bin\Release\SegmentationForm.exe.config
 C:\Users\kopi\Documents\Github\Geos\Geos\SegmentationForm\bin\Release\SegmentationForm.exe
 C:\Users\kopi\Documents\Github\Geos\Geos\SegmentationForm\bin\Release\SegmentationForm.pdb
-C:\Users\kopi\Documents\Github\Geos\Geos\SegmentationForm\bin\Release\Geos.dll
-C:\Users\kopi\Documents\Github\Geos\Geos\SegmentationForm\bin\Release\Geos.pdb
 C:\Users\kopi\Documents\Github\Geos\Geos\SegmentationForm\obj\Release\SegmentationForm.csprojResolveAssemblyReference.cache
 C:\Users\kopi\Documents\Github\Geos\Geos\SegmentationForm\obj\Release\SegmentationForm.EditForm.resources
 C:\Users\kopi\Documents\Github\Geos\Geos\SegmentationForm\obj\Release\SegmentationForm.HelloForm.resources
@@ -23,6 +21,5 @@ C:\Users\kopi\Documents\Github\Geos\Geos\SegmentationForm\obj\Release\Segmentati
 C:\Users\kopi\Documents\Github\Geos\Geos\SegmentationForm\obj\Release\SegmentationForm.SegmentationForm.resources
 C:\Users\kopi\Documents\Github\Geos\Geos\SegmentationForm\obj\Release\SegmentationForm.csproj.GenerateResource.cache
 C:\Users\kopi\Documents\Github\Geos\Geos\SegmentationForm\obj\Release\SegmentationForm.csproj.CoreCompileInputs.cache
-C:\Users\kopi\Documents\Github\Geos\Geos\SegmentationForm\obj\Release\SegmentationForm.csproj.CopyComplete
 C:\Users\kopi\Documents\Github\Geos\Geos\SegmentationForm\obj\Release\SegmentationForm.exe
 C:\Users\kopi\Documents\Github\Geos\Geos\SegmentationForm\obj\Release\SegmentationForm.pdb

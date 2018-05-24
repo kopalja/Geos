@@ -28,203 +28,284 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.SegmentationLabel = new System.Windows.Forms.Label();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.ColorLabel = new System.Windows.Forms.Label();
-            this.ColorBox = new System.Windows.Forms.CheckedListBox();
-            this.TetaLabel = new System.Windows.Forms.Label();
-            this.TimeBox = new System.Windows.Forms.CheckedListBox();
-            this.SegmentationBox = new System.Windows.Forms.CheckedListBox();
-            this.TimeLabel = new System.Windows.Forms.Label();
-            this.TetaBox = new System.Windows.Forms.CheckedListBox();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.TypeButton3 = new System.Windows.Forms.RadioButton();
+            this.TypeButton2 = new System.Windows.Forms.RadioButton();
+            this.TypeButton1 = new System.Windows.Forms.RadioButton();
+            this.TimeButton1 = new System.Windows.Forms.RadioButton();
+            this.TimeButton2 = new System.Windows.Forms.RadioButton();
+            this.TimeButton3 = new System.Windows.Forms.RadioButton();
+            this.BoundButton1 = new System.Windows.Forms.RadioButton();
+            this.BoundButton2 = new System.Windows.Forms.RadioButton();
+            this.BoundButton3 = new System.Windows.Forms.RadioButton();
+            this.ColorButton1 = new System.Windows.Forms.RadioButton();
+            this.ColorButton2 = new System.Windows.Forms.RadioButton();
             this.tableLayoutPanel1.SuspendLayout();
+            this.groupBox4.SuspendLayout();
+            this.groupBox3.SuspendLayout();
+            this.groupBox2.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // SegmentationLabel
-            // 
-            this.SegmentationLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.SegmentationLabel.AutoSize = true;
-            this.SegmentationLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.SegmentationLabel.Location = new System.Drawing.Point(50, 20);
-            this.SegmentationLabel.Margin = new System.Windows.Forms.Padding(50, 20, 50, 10);
-            this.SegmentationLabel.Name = "SegmentationLabel";
-            this.SegmentationLabel.Size = new System.Drawing.Size(286, 70);
-            this.SegmentationLabel.TabIndex = 0;
-            this.SegmentationLabel.Text = "SegmentationType";
-            this.SegmentationLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // tableLayoutPanel1
             // 
-            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Controls.Add(this.ColorLabel, 1, 2);
-            this.tableLayoutPanel1.Controls.Add(this.ColorBox, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.TetaLabel, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.TimeBox, 1, 1);
-            this.tableLayoutPanel1.Controls.Add(this.TimeLabel, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.SegmentationLabel, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.TetaBox, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.SegmentationBox, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.groupBox4, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.groupBox3, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.groupBox2, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.groupBox1, 0, 0);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 12);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 4;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(773, 400);
+            this.tableLayoutPanel1.RowCount = 2;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(604, 338);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
-            // ColorLabel
+            // groupBox4
             // 
-            this.ColorLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.ColorLabel.AutoSize = true;
-            this.ColorLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.ColorLabel.Location = new System.Drawing.Point(436, 220);
-            this.ColorLabel.Margin = new System.Windows.Forms.Padding(50, 20, 50, 10);
-            this.ColorLabel.Name = "ColorLabel";
-            this.ColorLabel.Size = new System.Drawing.Size(287, 70);
-            this.ColorLabel.TabIndex = 10;
-            this.ColorLabel.Text = "Color Representation";
-            this.ColorLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.groupBox4.Controls.Add(this.ColorButton2);
+            this.groupBox4.Controls.Add(this.ColorButton1);
+            this.groupBox4.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.groupBox4.Location = new System.Drawing.Point(305, 172);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(296, 163);
+            this.groupBox4.TabIndex = 4;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Color representation";
             // 
-            // ColorBox
+            // groupBox3
             // 
-            this.ColorBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.ColorBox.CheckOnClick = true;
-            this.ColorBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.ColorBox.FormattingEnabled = true;
-            this.ColorBox.Items.AddRange(new object[] {
-            "RGB",
-            "LAB"});
-            this.ColorBox.Location = new System.Drawing.Point(50, 310);
-            this.ColorBox.Margin = new System.Windows.Forms.Padding(50, 10, 50, 10);
-            this.ColorBox.Name = "ColorBox";
-            this.ColorBox.Size = new System.Drawing.Size(286, 67);
-            this.ColorBox.TabIndex = 9;
-            this.ColorBox.SelectedIndexChanged += new System.EventHandler(this.ColorBox_SelectedIndexChanged);
+            this.groupBox3.Controls.Add(this.BoundButton3);
+            this.groupBox3.Controls.Add(this.BoundButton2);
+            this.groupBox3.Controls.Add(this.BoundButton1);
+            this.groupBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.groupBox3.Location = new System.Drawing.Point(3, 172);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(296, 163);
+            this.groupBox3.TabIndex = 3;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Bound smoothness";
             // 
-            // TetaLabel
+            // groupBox2
             // 
-            this.TetaLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.TetaLabel.AutoSize = true;
-            this.TetaLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.TetaLabel.Location = new System.Drawing.Point(50, 220);
-            this.TetaLabel.Margin = new System.Windows.Forms.Padding(50, 20, 50, 10);
-            this.TetaLabel.Name = "TetaLabel";
-            this.TetaLabel.Size = new System.Drawing.Size(286, 70);
-            this.TetaLabel.TabIndex = 7;
-            this.TetaLabel.Text = "Bound smoothness";
-            this.TetaLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.groupBox2.Controls.Add(this.TimeButton3);
+            this.groupBox2.Controls.Add(this.TimeButton2);
+            this.groupBox2.Controls.Add(this.TimeButton1);
+            this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.groupBox2.Location = new System.Drawing.Point(305, 3);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(296, 163);
+            this.groupBox2.TabIndex = 3;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Time optimalization";
             // 
-            // TimeBox
+            // groupBox1
             // 
-            this.TimeBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.TimeBox.CheckOnClick = true;
-            this.TimeBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.TimeBox.FormattingEnabled = true;
-            this.TimeBox.Items.AddRange(new object[] {
-            "Low",
-            "Medium",
-            "High"});
-            this.TimeBox.Location = new System.Drawing.Point(436, 110);
-            this.TimeBox.Margin = new System.Windows.Forms.Padding(50, 10, 50, 10);
-            this.TimeBox.Name = "TimeBox";
-            this.TimeBox.Size = new System.Drawing.Size(287, 67);
-            this.TimeBox.TabIndex = 6;
-            this.TimeBox.SelectedIndexChanged += new System.EventHandler(this.TimeBox_SelectedIndexChanged);
+            this.groupBox1.Controls.Add(this.TypeButton3);
+            this.groupBox1.Controls.Add(this.TypeButton2);
+            this.groupBox1.Controls.Add(this.TypeButton1);
+            this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.groupBox1.Location = new System.Drawing.Point(3, 3);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(296, 163);
+            this.groupBox1.TabIndex = 2;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Segmentation type";
             // 
-            // SegmentationBox
+            // TypeButton3
             // 
-            this.SegmentationBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.SegmentationBox.CheckOnClick = true;
-            this.SegmentationBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.SegmentationBox.FormattingEnabled = true;
-            this.SegmentationBox.Items.AddRange(new object[] {
-            "Sharp",
-            "Color",
-            "Sharp and Color"});
-            this.SegmentationBox.Location = new System.Drawing.Point(50, 110);
-            this.SegmentationBox.Margin = new System.Windows.Forms.Padding(50, 10, 50, 10);
-            this.SegmentationBox.Name = "SegmentationBox";
-            this.SegmentationBox.Size = new System.Drawing.Size(286, 67);
-            this.SegmentationBox.TabIndex = 5;
-            this.SegmentationBox.SelectedIndexChanged += new System.EventHandler(this.SegmentationBox_SelectedIndexChanged);
+            this.TypeButton3.AutoSize = true;
+            this.TypeButton3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.TypeButton3.Location = new System.Drawing.Point(6, 101);
+            this.TypeButton3.Name = "TypeButton3";
+            this.TypeButton3.Size = new System.Drawing.Size(70, 24);
+            this.TypeButton3.TabIndex = 2;
+            this.TypeButton3.Text = "Color";
+            this.TypeButton3.UseVisualStyleBackColor = true;
+            this.TypeButton3.CheckedChanged += new System.EventHandler(this.TypeButton3_CheckedChanged);
             // 
-            // TimeLabel
+            // TypeButton2
             // 
-            this.TimeLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.TimeLabel.AutoSize = true;
-            this.TimeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.TimeLabel.Location = new System.Drawing.Point(436, 20);
-            this.TimeLabel.Margin = new System.Windows.Forms.Padding(50, 20, 50, 10);
-            this.TimeLabel.Name = "TimeLabel";
-            this.TimeLabel.Size = new System.Drawing.Size(287, 70);
-            this.TimeLabel.TabIndex = 1;
-            this.TimeLabel.Text = "Time Optimalization";
-            this.TimeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.TypeButton2.AutoSize = true;
+            this.TypeButton2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.TypeButton2.Location = new System.Drawing.Point(6, 71);
+            this.TypeButton2.Name = "TypeButton2";
+            this.TypeButton2.Size = new System.Drawing.Size(148, 24);
+            this.TypeButton2.TabIndex = 1;
+            this.TypeButton2.Text = "Sharp and color";
+            this.TypeButton2.UseVisualStyleBackColor = true;
+            this.TypeButton2.CheckedChanged += new System.EventHandler(this.TypeButton2_CheckedChanged);
             // 
-            // TetaBox
+            // TypeButton1
             // 
-            this.TetaBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.TetaBox.CheckOnClick = true;
-            this.TetaBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.TetaBox.FormattingEnabled = true;
-            this.TetaBox.Items.AddRange(new object[] {
-            "Crooked",
-            "Normal",
-            "Smooth"});
-            this.TetaBox.Location = new System.Drawing.Point(436, 310);
-            this.TetaBox.Margin = new System.Windows.Forms.Padding(50, 10, 50, 10);
-            this.TetaBox.Name = "TetaBox";
-            this.TetaBox.Size = new System.Drawing.Size(287, 67);
-            this.TetaBox.TabIndex = 8;
-            this.TetaBox.SelectedIndexChanged += new System.EventHandler(this.TetaBox_SelectedIndexChanged);
+            this.TypeButton1.AutoSize = true;
+            this.TypeButton1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.TypeButton1.Location = new System.Drawing.Point(6, 41);
+            this.TypeButton1.Name = "TypeButton1";
+            this.TypeButton1.Size = new System.Drawing.Size(74, 24);
+            this.TypeButton1.TabIndex = 0;
+            this.TypeButton1.Text = "Sharp";
+            this.TypeButton1.UseVisualStyleBackColor = true;
+            this.TypeButton1.CheckedChanged += new System.EventHandler(this.TypeButton1_CheckedChanged);
+            // 
+            // TimeButton1
+            // 
+            this.TimeButton1.AutoSize = true;
+            this.TimeButton1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.TimeButton1.Location = new System.Drawing.Point(6, 41);
+            this.TimeButton1.Name = "TimeButton1";
+            this.TimeButton1.Size = new System.Drawing.Size(61, 24);
+            this.TimeButton1.TabIndex = 3;
+            this.TimeButton1.Text = "Low";
+            this.TimeButton1.UseVisualStyleBackColor = true;
+            this.TimeButton1.CheckedChanged += new System.EventHandler(this.TimeButton1_CheckedChanged);
+            // 
+            // TimeButton2
+            // 
+            this.TimeButton2.AutoSize = true;
+            this.TimeButton2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.TimeButton2.Location = new System.Drawing.Point(6, 71);
+            this.TimeButton2.Name = "TimeButton2";
+            this.TimeButton2.Size = new System.Drawing.Size(89, 24);
+            this.TimeButton2.TabIndex = 4;
+            this.TimeButton2.Text = "Medium";
+            this.TimeButton2.UseVisualStyleBackColor = true;
+            this.TimeButton2.CheckedChanged += new System.EventHandler(this.TimeButton2_CheckedChanged);
+            // 
+            // TimeButton3
+            // 
+            this.TimeButton3.AutoSize = true;
+            this.TimeButton3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.TimeButton3.Location = new System.Drawing.Point(6, 101);
+            this.TimeButton3.Name = "TimeButton3";
+            this.TimeButton3.Size = new System.Drawing.Size(65, 24);
+            this.TimeButton3.TabIndex = 5;
+            this.TimeButton3.Text = "High";
+            this.TimeButton3.UseVisualStyleBackColor = true;
+            this.TimeButton3.CheckedChanged += new System.EventHandler(this.TimeButton3_CheckedChanged);
+            // 
+            // BoundButton1
+            // 
+            this.BoundButton1.AutoSize = true;
+            this.BoundButton1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.BoundButton1.Location = new System.Drawing.Point(6, 43);
+            this.BoundButton1.Name = "BoundButton1";
+            this.BoundButton1.Size = new System.Drawing.Size(92, 24);
+            this.BoundButton1.TabIndex = 3;
+            this.BoundButton1.Text = "Crooked";
+            this.BoundButton1.UseVisualStyleBackColor = true;
+            this.BoundButton1.CheckedChanged += new System.EventHandler(this.BoundButton1_CheckedChanged);
+            // 
+            // BoundButton2
+            // 
+            this.BoundButton2.AutoSize = true;
+            this.BoundButton2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.BoundButton2.Location = new System.Drawing.Point(6, 73);
+            this.BoundButton2.Name = "BoundButton2";
+            this.BoundButton2.Size = new System.Drawing.Size(84, 24);
+            this.BoundButton2.TabIndex = 4;
+            this.BoundButton2.Text = "Normal";
+            this.BoundButton2.UseVisualStyleBackColor = true;
+            this.BoundButton2.CheckedChanged += new System.EventHandler(this.BoundButton2_CheckedChanged);
+            // 
+            // BoundButton3
+            // 
+            this.BoundButton3.AutoSize = true;
+            this.BoundButton3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.BoundButton3.Location = new System.Drawing.Point(6, 103);
+            this.BoundButton3.Name = "BoundButton3";
+            this.BoundButton3.Size = new System.Drawing.Size(87, 24);
+            this.BoundButton3.TabIndex = 5;
+            this.BoundButton3.Text = "Smooth";
+            this.BoundButton3.UseVisualStyleBackColor = true;
+            this.BoundButton3.CheckedChanged += new System.EventHandler(this.BoundButton3_CheckedChanged);
+            // 
+            // ColorButton1
+            // 
+            this.ColorButton1.AutoSize = true;
+            this.ColorButton1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.ColorButton1.Location = new System.Drawing.Point(6, 43);
+            this.ColorButton1.Name = "ColorButton1";
+            this.ColorButton1.Size = new System.Drawing.Size(67, 24);
+            this.ColorButton1.TabIndex = 6;
+            this.ColorButton1.Text = "RGB";
+            this.ColorButton1.UseVisualStyleBackColor = true;
+            this.ColorButton1.CheckedChanged += new System.EventHandler(this.ColorButton1_CheckedChanged);
+            // 
+            // ColorButton2
+            // 
+            this.ColorButton2.AutoSize = true;
+            this.ColorButton2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.ColorButton2.Location = new System.Drawing.Point(6, 73);
+            this.ColorButton2.Name = "ColorButton2";
+            this.ColorButton2.Size = new System.Drawing.Size(63, 24);
+            this.ColorButton2.TabIndex = 7;
+            this.ColorButton2.Text = "LAB";
+            this.ColorButton2.UseVisualStyleBackColor = true;
+            this.ColorButton2.CheckedChanged += new System.EventHandler(this.ColorButton2_CheckedChanged);
             // 
             // EditForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(797, 453);
+            this.ClientSize = new System.Drawing.Size(628, 362);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Name = "EditForm";
             this.Text = "EditForm";
             this.Load += new System.EventHandler(this.EditForm_Load);
             this.tableLayoutPanel1.ResumeLayout(false);
-            this.tableLayoutPanel1.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
 
         }
 
         #endregion
-
-        private System.Windows.Forms.Label SegmentationLabel;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.Label TimeLabel;
-        private System.Windows.Forms.CheckedListBox SegmentationBox;
-        private System.Windows.Forms.CheckedListBox TimeBox;
-        private System.Windows.Forms.Label ColorLabel;
-        private System.Windows.Forms.CheckedListBox ColorBox;
-        private System.Windows.Forms.Label TetaLabel;
-        private System.Windows.Forms.CheckedListBox TetaBox;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.RadioButton TypeButton3;
+        private System.Windows.Forms.RadioButton TypeButton2;
+        private System.Windows.Forms.RadioButton TypeButton1;
+        private System.Windows.Forms.RadioButton TimeButton3;
+        private System.Windows.Forms.RadioButton TimeButton2;
+        private System.Windows.Forms.RadioButton TimeButton1;
+        private System.Windows.Forms.RadioButton BoundButton3;
+        private System.Windows.Forms.RadioButton BoundButton2;
+        private System.Windows.Forms.RadioButton BoundButton1;
+        private System.Windows.Forms.RadioButton ColorButton2;
+        private System.Windows.Forms.RadioButton ColorButton1;
     }
 }

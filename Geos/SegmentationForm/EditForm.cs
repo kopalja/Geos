@@ -15,71 +15,140 @@ namespace SegmentationForm
         public EditForm()
         {
             InitializeComponent();
+            this.FormBorderStyle = FormBorderStyle.FixedSingle; 
+            InitCheck();
+        }
+
+        private void InitCheck()
+        {
+            switch (SegmentationParams.segmentationType)
+            {
+                case SegmentationParams.Segmentationtype.Sharp:
+                    {
+                        TypeButton1.Checked = true;
+                        break;
+                    }
+                case SegmentationParams.Segmentationtype.Color:
+                    {
+                        TypeButton3.Checked = true;
+                        break;
+                    }
+                case SegmentationParams.Segmentationtype.SharpAndColor:
+                    {
+                        TypeButton2.Checked = true;
+                        break;
+                    }
+            }
+            switch (SegmentationParams.timeOptimalization)
+            {
+                case SegmentationParams.TimeOptimalization.Low:
+                    {
+                        TimeButton1.Checked = true;
+                        break;
+                    }
+                case SegmentationParams.TimeOptimalization.Medium:
+                    {
+                        TimeButton2.Checked = true;
+                        break;
+                    }
+                case SegmentationParams.TimeOptimalization.High:
+                    {
+                        TimeButton3.Checked = true;
+                        break;
+                    }
+            }
+            switch (SegmentationParams.boundSmoothness)
+            {
+                case SegmentationParams.BoundSmoothness.Harsh:
+                    {
+                        BoundButton1.Checked = true;
+                        break;
+                    }
+                case SegmentationParams.BoundSmoothness.Normal:
+                    {
+                        BoundButton2.Checked = true;
+                        break;
+                    }
+                case SegmentationParams.BoundSmoothness.Smooth:
+                    {
+                        BoundButton3.Checked = true;
+                        break;
+                    }
+            }
+            switch (SegmentationParams.colorRepresentation)
+            {
+                case SegmentationParams.ColorRepresentation.RGB:
+                    {
+                        ColorButton1.Checked = true;
+                        break;
+                    }
+                case SegmentationParams.ColorRepresentation.LAB:
+                    {
+                        ColorButton2.Checked = true;
+                        break;
+                    }
+            }
+
         }
 
         private void EditForm_Load(object sender, EventArgs e)
         {
-            SegmentationBox.SetItemChecked((int)EditParams.segmentationType, true);
-            TimeBox.SetItemCheckState((int)EditParams.timeOptimalization, CheckState.Checked);
-            TetaBox.SetItemChecked((int)EditParams.boundSmoothness, true);
-            ColorBox.SetItemChecked((int)EditParams.colorRepresentation, true);
+
         }
 
-
-        private void SegmentationBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void TypeButton1_CheckedChanged(object sender, EventArgs e)
         {
-            SetNewState(SegmentationBox);
-            if (SegmentationBox.GetItemChecked(0))
-                EditParams.segmentationType = EditParams.Segmentationtype.Sharp;
-            else if (SegmentationBox.GetItemChecked(1))
-                EditParams.segmentationType = EditParams.Segmentationtype.Color;
-            else if (SegmentationBox.GetItemChecked(2))
-                EditParams.segmentationType = EditParams.Segmentationtype.SharpAndColor;
+            SegmentationParams.segmentationType = SegmentationParams.Segmentationtype.Sharp;
         }
 
-        private void TimeBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void TypeButton2_CheckedChanged(object sender, EventArgs e)
         {
-            SetNewState(TimeBox);
-            if (TimeBox.GetItemChecked(0))
-                EditParams.timeOptimalization = EditParams.TimeOptimalization.Low;
-            else if (TimeBox.GetItemChecked(1))
-                EditParams.timeOptimalization = EditParams.TimeOptimalization.Medium;
-            else if (TimeBox.GetItemChecked(2))
-                EditParams.timeOptimalization = EditParams.TimeOptimalization.High;
+            SegmentationParams.segmentationType = SegmentationParams.Segmentationtype.SharpAndColor;
         }
 
-        private void TetaBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void TypeButton3_CheckedChanged(object sender, EventArgs e)
         {
-            SetNewState(TetaBox);
-            if (TetaBox.GetItemChecked(0))
-                EditParams.boundSmoothness = EditParams.BoundSmoothness.Harsh;
-            else if (TetaBox.GetItemChecked(1))
-                EditParams.boundSmoothness = EditParams.BoundSmoothness.Normal;
-            else if (TetaBox.GetItemChecked(2))
-                EditParams.boundSmoothness = EditParams.BoundSmoothness.Smooth;
+            SegmentationParams.segmentationType = SegmentationParams.Segmentationtype.Color;
         }
 
-        private void ColorBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void TimeButton1_CheckedChanged(object sender, EventArgs e)
         {
-            SetNewState(ColorBox);
-            if (ColorBox.GetItemChecked(0))
-                EditParams.colorRepresentation = EditParams.ColorRepresentation.RGB;
-            else if (ColorBox.GetItemChecked(1))
-                EditParams.colorRepresentation = EditParams.ColorRepresentation.LAB;
+            SegmentationParams.timeOptimalization = SegmentationParams.TimeOptimalization.Low;
         }
 
-
-        private void SetNewState(CheckedListBox checkBox)
+        private void TimeButton2_CheckedChanged(object sender, EventArgs e)
         {
-            int iSelectedIndex = checkBox.SelectedIndex;
-            if (iSelectedIndex == -1) return;
-            for (int iIndex = 0; iIndex < checkBox.Items.Count; iIndex++)
-                checkBox.SetItemCheckState(iIndex, CheckState.Unchecked);
-            checkBox.SetItemCheckState(iSelectedIndex, CheckState.Checked);
+            SegmentationParams.timeOptimalization = SegmentationParams.TimeOptimalization.Medium;
         }
 
+        private void TimeButton3_CheckedChanged(object sender, EventArgs e)
+        {
+            SegmentationParams.timeOptimalization = SegmentationParams.TimeOptimalization.High;
+        }
 
+        private void BoundButton1_CheckedChanged(object sender, EventArgs e)
+        {
+            SegmentationParams.boundSmoothness = SegmentationParams.BoundSmoothness.Harsh;
+        }
 
+        private void BoundButton2_CheckedChanged(object sender, EventArgs e)
+        {
+            SegmentationParams.boundSmoothness = SegmentationParams.BoundSmoothness.Normal;
+        }
 
+        private void BoundButton3_CheckedChanged(object sender, EventArgs e)
+        {
+            SegmentationParams.boundSmoothness = SegmentationParams.BoundSmoothness.Smooth;
+        }
+
+        private void ColorButton1_CheckedChanged(object sender, EventArgs e)
+        {
+            SegmentationParams.colorRepresentation = SegmentationParams.ColorRepresentation.RGB;
+        }
+
+        private void ColorButton2_CheckedChanged(object sender, EventArgs e)
+        {
+            SegmentationParams.colorRepresentation = SegmentationParams.ColorRepresentation.LAB;
+        }
     }
 }

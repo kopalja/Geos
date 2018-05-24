@@ -1,9 +1,22 @@
-﻿  Probability.cpp
-c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\probability.cpp(66): warning C4018: '<': signed/unsigned mismatch
-c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\probability.cpp(70): warning C4018: '<': signed/unsigned mismatch
-c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\probability.cpp(278): warning C4244: '=': conversion from 'unsigned long' to 'BYTE', possible loss of data
-c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\probability.cpp(279): warning C4244: '=': conversion from 'unsigned long' to 'BYTE', possible loss of data
-c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\probability.cpp(280): warning C4244: '=': conversion from 'unsigned long' to 'BYTE', possible loss of data
-  AssemblyInfo.obj : /DEBUG:FASTLINK is not supported when managed code is present; restarting link with /DEBUG:FULL
-     Creating library C:\Users\kopi\Documents\Github\Geos\Geos\Debug\Geos.lib and object C:\Users\kopi\Documents\Github\Geos\Geos\Debug\Geos.exp
+﻿  Geos.cpp
+c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\geos.h(108): warning C4018: '<': signed/unsigned mismatch
+c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\geos.h(110): warning C4018: '<': signed/unsigned mismatch
+c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\energy.h(39): warning C4018: '<': signed/unsigned mismatch
+c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\energy.h(45): warning C4018: '<': signed/unsigned mismatch
+c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\energy.h(105): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\energy.h(86): warning C4101: 'temp': unreferenced local variable
+c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\geos.cpp(105): warning C4244: '=': conversion from 'double' to 'BYTE', possible loss of data
+c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\geos.cpp(106): warning C4244: '=': conversion from 'double' to 'BYTE', possible loss of data
+c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\geos.cpp(107): warning C4244: '=': conversion from 'double' to 'BYTE', possible loss of data
+c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\geos.cpp(111): warning C4244: '=': conversion from 'double' to 'BYTE', possible loss of data
+c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\geos.cpp(112): warning C4244: '=': conversion from 'double' to 'BYTE', possible loss of data
+c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\geos.cpp(113): warning C4244: '=': conversion from 'double' to 'BYTE', possible loss of data
+c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\geos.cpp(116): warning C4244: '=': conversion from 'double' to 'BYTE', possible loss of data
+c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\geos.cpp(117): warning C4244: '=': conversion from 'double' to 'BYTE', possible loss of data
+c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\geos.cpp(118): warning C4244: '=': conversion from 'double' to 'BYTE', possible loss of data
+c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\geos.cpp(129): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\geos.cpp(137): warning C4018: '<': signed/unsigned mismatch
+c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\geos.cpp(144): warning C4018: '<': signed/unsigned mismatch
+c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\geos.cpp(151): warning C4018: '<': signed/unsigned mismatch
+c:\users\kopi\documents\github\geos\geos\geos\sourcegeos\geos.cpp(157): warning C4018: '<': signed/unsigned mismatch
   Geos.vcxproj -> C:\Users\kopi\Documents\Github\Geos\Geos\Debug\Geos.dll

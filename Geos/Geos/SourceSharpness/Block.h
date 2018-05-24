@@ -41,5 +41,7 @@ public:
 
 
 	BYTE GetMax();
+
+
 };
 

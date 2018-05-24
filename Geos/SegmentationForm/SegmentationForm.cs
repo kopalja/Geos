@@ -24,13 +24,13 @@ namespace SegmentationForm
     public partial class SegmentationForm : Form
     {
 
-        [DllImport("Geos.dll", CallingConvention = CallingConvention.StdCall)]
+        [DllImport("Geos.dll", CallingConvention = CallingConvention.Cdecl)]
         static public extern void SegmentationProcess(
             String imagePath,
             int segmentationType,
             int timeOptimalization,
             int boundSmoothness,
-            int colorRepresentation, 
+            int colorRepresentation,
             int[] labeling,
             int[] foregroundX,
             int[] foregroundY,
@@ -40,8 +40,6 @@ namespace SegmentationForm
             int backgroundSize
             );
 
-        // [DllImport("Geos.dll", CallingConvention = CallingConvention.StdCall)]
-        // static public extern void SegmentationProcess(String imagePath, int segmentationType, int[] labeling);
 
         private const int maxWidth = 1000;
         private const int maxHeight = 700;
@@ -64,7 +62,6 @@ namespace SegmentationForm
         private List<int> backgroundX = new List<int>();
         private List<int> backgroundY = new List<int>();
 
-        int timeOptimalization;
 
         //
 
@@ -165,7 +162,7 @@ namespace SegmentationForm
                         Rectangle r = new Rectangle(0, 0, resultImage.Width, resultImage.Height);
 
                         Bitmap output = resultImage.Clone(r, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-                        output.MakeTransparent(Color.White);
+                        output.MakeTransparent(backGroundColor);
                         output.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
                     }
                     saveImagePath = saveDialog.FileName;
@@ -207,7 +204,7 @@ namespace SegmentationForm
         /* Parameters Strip Actions */
         private void SharpStrip_Click(object sender, EventArgs e)
         {
-            EditParams.segmentationType = EditParams.Segmentationtype.Sharp;
+            SegmentationParams.segmentationType = SegmentationParams.Segmentationtype.Sharp;
             TypeStrip.Text = "Type -> Sharp";
             SharpStrip.Checked = true;
             SharpAndColorStrip.Checked = false;
@@ -217,7 +214,7 @@ namespace SegmentationForm
 
         private void SharpAndColorStrip_Click(object sender, EventArgs e)
         {
-            EditParams.segmentationType = EditParams.Segmentationtype.SharpAndColor;
+            SegmentationParams.segmentationType = SegmentationParams.Segmentationtype.SharpAndColor;
             TypeStrip.Text = "Type -> Sharp&Color";
             SharpStrip.Checked = false;
             SharpAndColorStrip.Checked = true;
@@ -226,7 +223,7 @@ namespace SegmentationForm
 
         private void ColorStrip_Click(object sender, EventArgs e)
         {
-            EditParams.segmentationType = EditParams.Segmentationtype.Color;
+            SegmentationParams.segmentationType = SegmentationParams.Segmentationtype.Color;
             TypeStrip.Text = "Type -> Color";
             SharpStrip.Checked = false;
             SharpAndColorStrip.Checked = false;
@@ -265,14 +262,14 @@ namespace SegmentationForm
             EditForm editForm = new EditForm();
             editForm.ShowDialog(this);
 
-            if (EditParams.segmentationType == EditParams.Segmentationtype.Sharp)
+            if (SegmentationParams.segmentationType == SegmentationParams.Segmentationtype.Sharp)
             {
                 TypeStrip.Text = "Type -> Sharp";
                 SharpStrip.Checked = true;
                 SharpAndColorStrip.Checked = false;
                 ColorStrip.Checked = false;
             }
-            else if (EditParams.segmentationType == EditParams.Segmentationtype.SharpAndColor)
+            else if (SegmentationParams.segmentationType == SegmentationParams.Segmentationtype.SharpAndColor)
             {
                 TypeStrip.Text = "Type -> SharpAndColor";
                 SharpStrip.Checked = false;
@@ -396,7 +393,7 @@ namespace SegmentationForm
         private void LoadImageDialog()
         {
             OpenFileDialog fileDialog = new OpenFileDialog();
-            fileDialog.Filter = "Image files (*.jpg ) | *.jpg; ";
+            fileDialog.Filter = "Image files (*.jpg ) (*.tif) | *.jpg; *.tif; ";
             fileDialog.RestoreDirectory = true;
 
             if (fileDialog.ShowDialog(this) == DialogResult.OK)
@@ -477,14 +474,13 @@ namespace SegmentationForm
             int[] labeling = new int[resultImage.Width * resultImage.Height];
 
 
-
             if (foregroundX.Count == 0 || backgroundX.Count == 0)
                 SegmentationProcess(
                     inputImagePath,
-                    (int)EditParams.segmentationType,
-                    (int)EditParams.timeOptimalization,
-                    (int)EditParams.boundSmoothness,
-                    (int)EditParams.colorRepresentation,
+                    (int)SegmentationParams.segmentationType,
+                    (int)SegmentationParams.timeOptimalization,
+                    (int)SegmentationParams.boundSmoothness,
+                    (int)SegmentationParams.colorRepresentation,
                     labeling,
                     null,
                     null,
@@ -495,11 +491,11 @@ namespace SegmentationForm
                     );
             else
                 SegmentationProcess(
-                    inputImagePath, 
-                    (int)EditParams.segmentationType,
-                    (int)EditParams.timeOptimalization,
-                    (int)EditParams.boundSmoothness,
-                    (int)EditParams.colorRepresentation,
+                    inputImagePath,
+                    (int)SegmentationParams.segmentationType,
+                    (int)SegmentationParams.timeOptimalization,
+                    (int)SegmentationParams.boundSmoothness,
+                    (int)SegmentationParams.colorRepresentation,
                     labeling,
                     foregroundX.ToArray(),
                     foregroundY.ToArray(),
@@ -512,7 +508,7 @@ namespace SegmentationForm
             Console.WriteLine("Dll finished");
             SetBitmap(labeling);
            // Compare(labeling);
-            Compare2();
+            //Compare2();
 
             //for (int i = 0; i < resultImage.Width * resultImage.Height; i++)
             //{
@@ -523,12 +519,12 @@ namespace SegmentationForm
 
         private void Compare2()
         {
-            System.IO.StreamWriter file = new StreamWriter("C:\\Users\\kopi\\Downloads\\adobe\\score.txt");
+            System.IO.StreamWriter file = new StreamWriter("C:\\xps15\\TestyBc\\geos\\score.txt");
             double sum = 0;
             for (int i = 1; i <= 31; i++)
             {
-                string adobePath = "C:\\Users\\kopi\\Downloads\\adobe\\sample" + i.ToString() + ".jpg";
-                string groundPath = "C:\\Users\\kopi\\Downloads\\groundtruth\\sample" + i.ToString() + ".jpg";
+                string adobePath = "C:\\xps15\\TestyBc\\geos\\sample" + i.ToString() + ".jpg";
+                string groundPath = "C:\\xps15\\TestyBc\\groundtruth\\sample" + i.ToString() + ".jpg";
 
                 Bitmap b1 = new Bitmap(adobePath);
                 Bitmap b2 = new Bitmap(groundPath);
@@ -643,7 +639,7 @@ namespace SegmentationForm
     }
 
 
-    static class EditParams
+    static class SegmentationParams
     {
         public enum Segmentationtype { Sharp = 0, Color = 1, SharpAndColor = 2 }
         public static Segmentationtype segmentationType = Segmentationtype.Sharp;

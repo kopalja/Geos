@@ -6,9 +6,9 @@
 #include <iostream>
 #include <ctime>
 
+#include <thread>
 using namespace std;
-using namespace System::Threading;
-using namespace System;
+
 
 const double sqrt2 = 1.41421356237;
 
@@ -70,41 +70,28 @@ void Geos::Process(
 
 void Geos::ImageSegmentation( __in const Image & rOrigin, __in const vector<Location> & rForeGround, __in const vector<Location> & rBackGround )
 {
+	m_width = rOrigin.width;
+	m_height = rOrigin.height;
+	m_ppResult = new bool*[m_width];
+	for (int i = 0; i < m_width; i++)
+		m_ppResult[i] = new bool[m_height];
+
 	clock_t start = clock();
 	m_pGrayImage = new Image( rOrigin.width, rOrigin.height, rOrigin.width * rOrigin.height, new BYTE[rOrigin.width * rOrigin.height] );
 	GrayScale( rOrigin, m_pGrayImage );
 
 	double ** ppProbability = new double*[rOrigin.width];
-	bool ** result = new bool*[rOrigin.width];
 	for (int i = 0; i < rOrigin.width; i++)
-	{
 		ppProbability[i] = new double[rOrigin.height];
-		result[i] = new bool[rOrigin.height];
-	}
 
 	Probability p;
 	p.GetProbabitily( m_SegmentationType, m_RgbType, rOrigin, const_cast<Image &>( *m_pGrayImage ), rForeGround, rBackGround, ppProbability );
 	cout << "probabilities " << clock() - start << endl;
 
-	MinimizeEnegry( rOrigin, ppProbability, result );
+	MinimizeEnegry( rOrigin, ppProbability );
 
 	cout << "minimalization " << clock() - start << endl;
 
-	m_width = rOrigin.width;
-	m_height = rOrigin.height;
-
-
-	m_ppResult = new bool*[m_width];
-	for (int i = 0; i < m_width; i++)
-		m_ppResult[i] = new bool[m_height];
-
-	for (int y = 0; y < m_height; y++)
-	{
-		for (int x = 0; x < m_width; x++)
-		{
-			m_ppResult[x][y] = result[x][y];
-		}
-	}
 
 
 
@@ -125,53 +112,54 @@ void Geos::ImageSegmentation( __in const Image & rOrigin, __in const vector<Loca
 				rOrigin.buffer[i + 1] = 0.0;
 				rOrigin.buffer[i + 2] = 0.0;
 			}
+
+			rOrigin.buffer[i] = 255.0 * ppProbability[x][y];
+			rOrigin.buffer[i + 1] = 255.0 * ppProbability[x][y];
+			rOrigin.buffer[i + 2] = 255.0 * ppProbability[x][y];
 			i += 3;
 			j ++;
 		}
 	}
 }
 
-void Geos::MinimizeEnegry( __in const Image & rOrigin, __in double ** ppProbability, __out bool ** ppLabeling )
+void Geos::MinimizeEnegry( __in const Image & rOrigin, __in double ** ppProbability )
 {
-	SymmetricalFilter^ symmetricalFilter = gcnew SymmetricalFilter(0.4, const_cast<Image &>(*m_pGrayImage), const_cast<const double **>(ppProbability));
+	SymmetricalFilter * symmetricalFilter = new SymmetricalFilter(0.4, const_cast<Image &>(*m_pGrayImage), const_cast<const double **>(ppProbability));
 	int numberOfEnergies = ( 3 - m_TimeOptimalization ) * 2; // 2, 4, 6
 	int tetaDiameter = sqrt( rOrigin.width * rOrigin.height ) / 100 * ( ( m_Smoothness * 5 ) + 1 );
 
+	
 
-	cli::array<Energy^>^ energy = gcnew cli::array<Energy^>(numberOfEnergies);
-	cli::array<Thread^>^ thread = gcnew cli::array<Thread^>(numberOfEnergies);
-
+	vector<Energy*> energy = vector<Energy*>(numberOfEnergies);
+	vector<thread> threads = vector<thread>(numberOfEnergies);
 
 	/* Create threads */
 	for (size_t i = 0; i < numberOfEnergies; i++)
 	{
-		energy[i] = gcnew Energy(i * 5, symmetricalFilter, ppProbability, const_cast<Image &>(*m_pGrayImage));
-		thread[i] = gcnew Thread(gcnew ThreadStart(energy[i], &Energy::EntryPoint));
-		thread[i]->Start();
+		energy[i] = new Energy(i * 5, symmetricalFilter, ppProbability, const_cast<Image &>(*m_pGrayImage));
+		threads[i] = thread(&Energy::EntryPoint, energy[i]);
 	}
 
 	/* Wait for all threads */
 	for (size_t i = 0; i < numberOfEnergies; i++)
 	{
-		thread[i]->Join();
+		threads[i].join();
 	}
 
 	/* Set labeling with min energy */
 	int minEnergy = MAXINT32;
 	for (size_t i = 0; i < numberOfEnergies; i++)
 	{
-		cout << "enery " << energy[i]->value << endl;
+		//cout << "enery " << (*energy)[i]->value << endl;
 		if (energy[i]->value < minEnergy)
 			minEnergy = energy[i]->value;
 	}
 	for (size_t i = 0; i < numberOfEnergies; i++)
 	{
 		if (energy[i]->value == minEnergy)
-			CopyLabeling(rOrigin.width, rOrigin.height, energy[i]->ppLabeling, ppLabeling);
+			CopyLabeling(rOrigin.width, rOrigin.height, energy[i]->ppLabeling);
 		delete energy[i];
 	}
-
-
 
 	delete m_pGrayImage;
 }

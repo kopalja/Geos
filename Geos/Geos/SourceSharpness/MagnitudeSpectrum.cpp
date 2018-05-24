@@ -24,6 +24,7 @@ MagnitudeSpectrum::~MagnitudeSpectrum( void )
 
 BYTE MagnitudeSpectrum::GetSlope( __in UINT baseIndex, __in const Image & pGrayImage )
 {
+	/* Count FFT (Time consuming)*/
 	m_pFourier->Process( pGrayImage, baseIndex );
 
 	for (UINT i = 0; i < vectorLength; i++)
@@ -31,6 +32,7 @@ BYTE MagnitudeSpectrum::GetSlope( __in UINT baseIndex, __in const Image & pGrayI
 		m_pRadialFrequency->m_pResultFunction[i] = 0;
 	}
 
+	/* Sample function */
 	for (UINT i = 0; i < blockSize; i++)
 	{
 		for (UINT j = 0; j < blockSize; j++)
@@ -45,7 +47,7 @@ BYTE MagnitudeSpectrum::GetSlope( __in UINT baseIndex, __in const Image & pGrayI
 		m_pRadialFrequency->m_pResultFunction[i] = log( m_pRadialFrequency->m_pResultFunction[i] ) / m_Log2;
 	}
 
-	
+	/* estimate magnitude of function */
 	double alfa = -1 * m_pLinearRegresion->GetAlpha( m_pRadialFrequency->m_pResultFunction, vectorLength );
 
 	if ( m_Skin )

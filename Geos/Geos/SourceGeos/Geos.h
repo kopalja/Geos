@@ -14,7 +14,7 @@ class Location;
 
 
 
-class _declspec(dllexport) Geos
+class Geos
 {
 public:
 	Geos();
@@ -89,8 +89,7 @@ private:
 
 	void MinimizeEnegry(
 		__in const Image & rOrigin,
-		__in double ** ppProbability,
-		__out bool ** ppLabeling
+		__in double ** ppProbability
 		);
 
 	double CountEnegry(
@@ -99,19 +98,18 @@ private:
 		__in bool ** ppLabeling
 		);
 
+	/* Copy labeling into result array */
 	void CopyLabeling(
 		__in int width,
 		__in int height,
-		__in bool ** ppInputLabeling,
-		__out bool ** ppResultLabeling
-
+		__in bool ** ppInputLabeling
 	)
 	{
 		for (size_t y = 0; y < height; y++)
 		{
 			for (size_t x = 0; x < width; x++)
 			{
-				ppResultLabeling[x][y] = ppInputLabeling[x][y];
+				m_ppResult[x][y] = ppInputLabeling[x][y];
 			}
 		}
 	}
@@ -154,53 +152,57 @@ private:
 	All parameters are passed in.
 */
 
-// With help
-extern "C"  __declspec(dllexport)  void _stdcall  SegmentationProcess( 
-	const char * imagePath, 
-	int segmentationType, 
-	int timeOptimalization,
-	int boundSmoothness,
-	int colorRepresentation, 
-	INT32 * data, 
-	INT32 * foregroundX, 
-	INT32 * foregroundY, 
-	INT32 * backgroundX, 
-	INT32 * backgroundY, 
-	int foregroundSize,
-	int backgroundSize
-	)
+
+
+extern "C"
 {
-	Geos g;
-	vector<Location> * pForeGround = new vector<Location>();
-	vector<Location> * pBackGround = new vector<Location>();
-
-	/* user helped interactively */
-	if (foregroundSize > 1 && backgroundSize > 1) 
+	__declspec(dllexport) void  SegmentationProcess(
+		const char * imagePath,
+		int segmentationType,
+		int timeOptimalization,
+		int boundSmoothness,
+		int colorRepresentation,
+		INT32 * data,
+		INT32 * foregroundX,
+		INT32 * foregroundY,
+		INT32 * backgroundX,
+		INT32 * backgroundY,
+		int foregroundSize,
+		int backgroundSize
+	)
 	{
-		for (int i = 0; i < foregroundSize; i++)
-		{
-			pForeGround->push_back( Location( foregroundX[i], foregroundY[i] ) );
-		}
-		for (int i = 0; i < backgroundSize; i++)
-		{
-			pBackGround->push_back( Location( backgroundX[i], backgroundY[i] ) );
-		}
-	}
+		Geos g;
+		vector<Location> * pForeGround = new vector<Location>();
+		vector<Location> * pBackGround = new vector<Location>();
 
-	/* Segmentation method */
-	g.Process( imagePath, const_cast<vector<Location>&>( *pForeGround ), const_cast<vector<Location>&>( *pBackGround ), segmentationType, timeOptimalization, boundSmoothness, colorRepresentation );
-	delete pForeGround;
-	delete pBackGround;
-
-	/* Copying result into one dimensional array */
-	for (int y = 0; y < g.m_height; y++)
-	{
-		for (int x = 0; x < g.m_width; x++)
+		/* user helped interactively */
+		if (foregroundSize > 1 && backgroundSize > 1)
 		{
-			if ( g.m_ppResult[x][y] )
-				data[y * g.m_width + x] = 1;
-			else 
-				data[y * g.m_width + x] = -1;
+			for (int i = 0; i < foregroundSize; i++)
+			{
+				pForeGround->push_back(Location(foregroundX[i], foregroundY[i]));
+			}
+			for (int i = 0; i < backgroundSize; i++)
+			{
+				pBackGround->push_back(Location(backgroundX[i], backgroundY[i]));
+			}
+		}
+
+		/* Segmentation method */
+		g.Process(imagePath, const_cast<vector<Location>&>(*pForeGround), const_cast<vector<Location>&>(*pBackGround), segmentationType, timeOptimalization, boundSmoothness, colorRepresentation);
+		delete pForeGround;
+		delete pBackGround;
+
+		/* Copying result into one dimensional array */
+		for (int y = 0; y < g.m_height; y++)
+		{
+			for (int x = 0; x < g.m_width; x++)
+			{
+				if (g.m_ppResult[x][y])
+					data[y * g.m_width + x] = 1;
+				else
+					data[y * g.m_width + x] = -1;
+			}
 		}
 	}
 }
